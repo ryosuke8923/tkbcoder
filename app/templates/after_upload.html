@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script type="text/javascript" src="../static/js/after_upload.js"></script>
+    <link rel="stylesheet" href="../static/css/main.css">
+    <link rel="stylesheet" href="../static/css/after_upload.css">
+    <script src="https://kit.fontawesome.com/25e48f69d0.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
+    <title>TKB Coder</title>
+</head>
+<header>
+    <div class="wrapper-menu">
+        <form action="/" method="GET">
+            <button i class="fa-solid fa-house"><span>Home</span></button>
+        </form>
+        <form action="/history" method="GET">
+            <button i class="fas fa-history"><span>History</span></button>
+        </form>
+        <form action="/result" method="GET">
+            <button i class="fas fa-chart-line"><span>Analysis</span></button>
+        </form>
+    </div>
+    <h1>TKBCoder</h1>
+    <p>アップロードが完了しました</p>
+    
+</header>
+<body>
+    
+    <main>
+        <form action="/result" method="POST" enctype="multipart/form-data">
+            <div class="sentences">
+                <div class="file_name"><p>ファイル名：{{file_name}}</p></div>
+                <!-- <form name="test"> -->
+                {%for line in lines %}
+                <div class="wrapper-sentence">
+                    <div class="checkbutton"><input type="checkbox" id = "{{line.index|safe}}" name="sent" value="{{line|safe}}"></div>
+                    <div class="sentence"><span>{{line.index}}</span><p>{{line.sentence}}</p></div>
+                    <br>
+                </div>
+                {%endfor%}
+                <!-- </form> -->
+            </div>
+            <div class="wrapper-popup">
+
+                <!-- オーバーレイ -->
+                <div id="overlay" class="overlay"></div>
+                <!-- モーダルウィンドウ -->
+                    <div class="modal-window">
+                    <div class="explanation"><p>これらの文章に興味を持った理由を入力してください</p></div>
+                    <!-- 閉じるボタン -->
+                    <textarea class="textarea" name="reason" cols="50" rows="10" required></textarea>
+                    <input type="submit" class="js-close button-close">
+                    </form>
+                    </div>
+                <!-- モーダルを開くボタン -->
+                    <div class="js-open button-open">登録</div>
+
+            </div>
+    </main>
+    
+</body>
+</html>
+

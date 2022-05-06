@@ -1,0 +1,138 @@
+html {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    color: #fff;
+    margin:0;
+    padding:0;
+     /* chromeでfix付かない原因 */
+    -webkit-perspective: 1px;
+    perspective: 1px;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+     /*=======================*/
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  header {
+    box-sizing: border-box;
+    min-height: 40vw;
+    padding: 15vw 0 5vw;
+    position: relative;
+    -webkit-transform-style: inherit;
+    transform-style: inherit;
+    width: 100vw;
+  }
+  header, header:before {
+    background: 50% 50% / cover;
+  }
+  header::before {
+    bottom: 0;
+    content: "";
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: block;
+    background-color: #8a8;
+    background-size: cover;
+    -webkit-transform-origin: center center 0;
+    -webkit-transform: translateZ(-1px) scale(2);
+    transform-origin: center center 0;
+    transform: translateZ(-1px) scale(2);
+    z-index: -1;
+    min-height: 100vh;
+  }
+  header * {
+    font-weight: normal;
+    letter-spacing: 0.2em;
+    text-align: center;
+    margin: 0;
+    padding: 1em 0;
+  }
+  header p {
+    background-color: hsla(0, 0%, 100%,0.1);
+  }
+
+  header h1{
+    top:0;
+    font-size: 5em;
+    text-align: center;
+  }
+  main {
+    background-color: hsl(60, 10%, 10%);
+    line-height: 1.7;
+    max-width: 32em;
+    padding: 5% calc(50% - 16em) 35%;
+    position: relative;
+  }
+  main p {
+    text-align: center;
+  }
+  .wrapper-menu{
+    position:absolute;
+    top: 0;
+    width: 100%;
+    display: flex;
+}
+  .fa-house{
+    position: relative;
+    border:solid;
+    border-color:#8a8 ;
+    background-color: transparent;
+    padding: 0 0;
+    margin-top: 2%;
+    margin-left: 2%;
+    top: 0;
+    left: 20%;
+    font-size: 2rem;
+  }
+  .fa-house > span{
+      padding-top: 20%;
+      padding-bottom: 0;
+      display: block;
+      font-size: 1.2rem;
+      font-family: 'Caveat', cursive;
+  }
+  .fa-history{
+    position: relative;
+    border:solid;
+    border-color:#8a8 ;
+    background-color: transparent;
+    padding: 0 0;
+    margin-top: 2%;
+    margin-left: 2%;
+    top: 0;
+    left:30%;
+    font-size: 2rem;
+  }
+  .fa-history > span{
+    padding-top: 20%;
+    padding-bottom: 0;
+    display: block;
+    font-size: 1rem;
+    font-family: 'Caveat', cursive;
+}
+
+.fa-chart-line{
+    position: relative;
+    border:solid;
+    border-color:#8a8 ;
+    background-color: transparent;
+    padding: 0 0;
+    margin-top: 2%;
+    margin-left: 2%;
+    top: 0;
+    left:30%;
+    font-size: 2rem;
+  }
+
+  .fa-chart-line > span{
+    padding-top: 20%;
+    padding-bottom: 0;
+    display: block;
+    font-size: 1rem;
+    font-family: 'Caveat', cursive;
+}

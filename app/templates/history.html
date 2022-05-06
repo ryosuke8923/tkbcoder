@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <link rel="stylesheet" href="../static/css/history.css">
+    <script src="https://kit.fontawesome.com/25e48f69d0.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
+    <title>TKBCoder</title>
+</head>
+<body>
+    <header>
+        <div class="wrapper-menu">
+            <form action="/" method="GET">
+                <button i class="fa-solid fa-house"><span>Home</span></button>
+            </form>
+            <form action="/history" method="GET">
+                <button i class="fas fa-history"><span>History</span></button>
+            </form>
+            <form action="/result" method="GET">
+                <button i class="fas fa-chart-line"><span>Analysis</span></button>
+            </form>
+        </div>
+        <h1>TKBCoder</h1>
+        <h2>これまでに登録した文章と理由</h2>
+        
+    </header>
+      <main>
+       
+        <div class="wrapper-sentence">
+            
+            {%for key,value in history_datas.items() %}
+            <div class="data">
+                <div class="sentence"><span>＜あなたが選択した文章＞</span><br></div>  
+                <div class="contents">
+                    {% for x in value %}
+                        <span>{{x.index}}</span>{{x.sentence}}<br><br>
+                    {%endfor%}
+                </div>
+            <div class="reason"><span class="re">＜あなたが選択した理由＞</span><br><span class="key">{{key}}</span></div><br>
+            </div>
+            {%endfor%}
+           
+        </div>
+       
+      </main>
+    
+</body>
+</html>

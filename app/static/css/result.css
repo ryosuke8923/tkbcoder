@@ -1,0 +1,170 @@
+
+  body {
+    background-color:hsl(60, 10%, 10%); 
+    z-index: 10;
+  }
+  
+  main {
+    height: 100%;
+  }
+  .sentences {
+      position: absolute;
+      left: 0;
+      width: 80vw;
+      display: inline-block;
+  }
+
+  .suggest {
+      position:fixed;
+      z-index: 3;
+      background-color:#99CC99;
+      top: 0;
+      right: 0;
+      width: 19vw;
+      height: 100vh;
+      bottom: 0;
+      overflow-y: auto;
+  }
+
+  .suggest h1{
+      color: black;
+      text-align: center;
+      font-size: 0.8vw;
+  }
+  .wrapper-content{
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+  }
+  .checkbutton{
+      vertical-align:center;
+      padding-top: 5vh;
+      text-align: center;
+      padding-right: 5vw;
+      padding-left: 5vw;
+  }
+
+  .sentence{
+      width: 100%;
+      vertical-align:top;
+      border-bottom: solid;
+      font-size: 1vw;
+  }
+  
+  .sentence > span {
+    display: inline-block;
+    margin-left: 2%;
+    font-size: 1.5rem;
+  }
+
+  .sentence p {
+      text-align: left;
+      font-size: 1.5em;
+      overflow-wrap: break-word;
+  }
+
+  .wrapper-sentence {
+    display: flex;
+    position: relative;
+    margin-left: 3%;
+    margin-right: 3%;
+  }
+
+
+  /* リセットCSSは割愛します */
+/* 開くボタン */
+.button-open {
+    position: fixed;
+    top: 95%;
+    right: 0;
+    display: block;
+    margin: 0 auto;
+    width: 17vw;
+    padding: 1em;
+    background-color: #3140c9;
+    color: #eaeaea;
+    border-radius: 20rem;
+    text-align: center;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  /* モーダルウィンドウ */
+.modal-window {
+      display: none;
+      position: fixed;
+      top: 80%;
+      left: 80%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 300px;
+      background-color: #dfdddd;
+      border-radius: 5px;
+      z-index: 20;
+      padding: 2rem;
+    }
+
+.explanation{
+    position:absolute;
+    top: 5%;
+    width: 500px;
+}
+.modal-window p {
+
+    top: 0;
+    color: black;
+}
+.textarea{
+    　display: none;
+      position: fixed;
+      font-size: 1.5em;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 150px;
+      background-color: #dfdddd;
+      border-radius: 5px;
+      z-index: 11;
+      padding: 2rem;
+}
+  /* 閉じるボタン */
+  .button-close {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    padding: 1em;
+    background-color: #c96931;
+    color: #eaeaea;
+    border-radius: 20rem;
+    cursor: pointer;
+  }
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+  }
+
+  .suggest_content{
+    color: black;
+    border-bottom: solid;
+  }
+
+  .suggest_content > a,a:hover,a:visited{
+    color: inherit;
+}
+
+  .suggest_content > a>span{
+    display: inline-block; 
+    margin-left: 2%;
+    margin-top: 2%;
+  }
