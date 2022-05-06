@@ -79,17 +79,18 @@ def index():
         f = request.files["file"]
         #ファイル情報の処理
         questionnaire_data.file_name = secure_filename(f.filename)
-        questionnaire_data.file_path = my_path + "files/" + questionnaire_data.file_name
-        questionnaire_data.file_save(f)
-        #ファイルを開き，センテンス情報の取得
-        if os.path.isfile(questionnaire_data.file_path):
-            with open(questionnaire_data.file_path,"r") as f:
-                questionnaire_data.texts = f.readlines()
-            questionnaire_data.make_html_data()
-            return render_template(
-                'after_upload.html',
-                file_name=questionnaire_data.file_name,
-                lines=questionnaire_data.html_data)
+        if questionnaire_data.file_name != "":
+            questionnaire_data.file_path = my_path + "files/" + questionnaire_data.file_name
+            questionnaire_data.file_save(f)
+            #ファイルを開き，センテンス情報の取得
+            if os.path.isfile(questionnaire_data.file_path):
+                with open(questionnaire_data.file_path,"r") as f:
+                    questionnaire_data.texts = f.readlines()
+                questionnaire_data.make_html_data()
+                return render_template(
+                    'after_upload.html',
+                    file_name=questionnaire_data.file_name,
+                    lines=questionnaire_data.html_data)        
         else:
             return render_template('index.html')
     else:
