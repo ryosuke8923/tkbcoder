@@ -39,6 +39,17 @@ class AnalystData:
         seen = []
         return [x for x in seq if x not in seen and not seen.append(x)]
 
+    def save(self):
+        target_dir = my_path + "files/data.txt"
+        with open(target_dir,"w") as f:
+            for k,v in self.reason2choice.items():
+                for vv in v:
+                    f.write("選択文章：{}".format(vv["sentence"]))
+                f.write("理由:{}\n".format(k))
+                f.write("=================\n")
+
+
+
 #アンケートデータ用クラス
 class QuestionnaireData:
     def __init__(self,file_name=None,file_path=None,texts=None,):
@@ -126,4 +137,5 @@ def result():
 
 @app.route("/history",methods=["GET"])
 def history():
+    analyst_data.save()
     return render_template("history.html",history_datas=analyst_data.reason2choice)
