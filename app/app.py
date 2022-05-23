@@ -16,6 +16,7 @@ class AnalystData:
         self.reason2choice = {}
         self.reasons = []
         self.choice_texts = []
+        self.chat_data = []
 
     def add_reason(self,reason):
         self.reasons.append(reason)
@@ -99,7 +100,7 @@ def index():
                     questionnaire_data.texts = f.readlines()
                 questionnaire_data.make_html_data()
                 return render_template(
-                    'after_upload.html',
+                    'result.html',
                     file_name=questionnaire_data.file_name,
                     lines=questionnaire_data.html_data)        
         else:
@@ -115,15 +116,30 @@ def index():
 @app.route("/result",methods=["GET","POST"])
 def result():
     if request.method == "POST":
+        tmp_reason = request.form.get("reason")
         #分析者が選択した文章と理由の取得＆処理
         analyst_data.add_data(request.form.get('reason'),request.form.getlist('sent'))
+        #分析者の投稿を保存
+        if tmp_reason != "":
+            analyst_data.chat_data.append(["analyst",tmp_reason])
+            system_return = False
+            #システム側からの返事を保存
+            if system_return:
+                pass
+            else:
+                comment = "ふむふむ"
+                analyst_data.chat_data.append(["system",comment])
+        else:
+            pass
         return render_template(
             "result.html",
             file_name=questionnaire_data.file_name,
             lines=questionnaire_data.html_data,
-            result=analyst_data.choice_texts
+            result=analyst_data.chat_data,
+            tmp_reason = tmp_reason
         )
     else:
+        print(analyst_data.chat_data)
         if questionnaire_data.html_data==None:
             lines = [{"index":999,"sentence":"データがありません"}]
         else:
@@ -132,7 +148,7 @@ def result():
             "result.html",
             file_name=questionnaire_data.file_name,
             lines=lines,
-            result=analyst_data.choice_texts
+            result=analyst_data.chat_data
         )
 
 @app.route("/history",methods=["GET"])
