@@ -14,17 +14,36 @@
 </head>
 
 <body>
-    
     <div class="suggest">
-        <h1>＜＜あなたが選択した文章と似ている文章＞＞</h1>
         {%for re in result %}
-            <div class="suggest_content">
-                <!-- <button type="button" onclick="location.href=#{{re.index|safe}}"></button> -->
-                <a href="#{{re.index|safe}}"><span>{{re.index}}</span></a>
-                <p>{{re.sentence}}</p>
-            </div>
+            {%if re[0] == "system"%}
+                <div class="system_suggest">   
+                    <div class="system left">
+                        <img class="icon" src="static/img/system_icon.png" alt="">
+                        <div class="suggest_content">
+                            <!-- <button type="button" onclick="location.href=#{{re.index|safe}}"></button> -->
+                            <!-- <a href="#{{re.index|safe}}"><span>{{re.index}}</span></a> -->
+                            <p>{{re[1]}}</p>
+                        </div>
+                    </div>            
+                </div>
+            {%else%}
+                <div class="user_comment">
+                    <div class="user right">
+                        <div class="suggest_content">
+                            <p>{{re[1]}}</p>
+                        </div>
+                    </div> 
+                </div>
+            {%endif%}
         {%endfor%}
     </div>
+    <div id="attention_word" class="attention_word">
+        >>> 選択した文章が入ります
+    </div>
+    <!-- <div class="wrapper_user_textarea">
+        <textarea class="user_textarea" name="reason" cols="20" rows="5" placeholder="メッセージを入力してください" required></textarea>
+    </div> -->
 
     <header>
         <div class="wrapper-menu">
@@ -56,29 +75,13 @@
                     </div>             
                     {%endfor%}
                     <!-- </form> -->
-                </div>
-
-               
+                </div> 
             </div>
-                <div class="wrapper-popup">
+                    
+            <textarea class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
+            <input type="submit" class="js-close button-close">
+            </form>
 
-                    <!-- オーバーレイ -->
-                    <div id="overlay" class="overlay"></div>
-                    <!-- モーダルウィンドウ -->
-                        <div class="modal-window">
-                        <div class="explanation"><p>これらの文章に興味を持った理由を入力してください</p></div>
-                        <!-- 閉じるボタン -->
-                        <!-- <textarea class="textarea" name="example" cols="50" rows="10"></textarea>
-                        <button class="js-close button-close">送信</button> -->
-                       
-                        <textarea class="textarea" name="reason" cols="50" rows="10" required></textarea>
-                        <input type="submit" class="js-close button-close">
-                        </form>
-                        </div>
-                    <!-- モーダルを開くボタン -->
-                        <div class="js-open button-open">登録</div>
-
-                </div>
         </main>
 </body>
 </html>
