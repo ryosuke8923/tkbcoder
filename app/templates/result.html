@@ -14,6 +14,11 @@
 </head>
 
 <body>
+    <!-- ローディング画面 -->
+    <!-- <div id="loading">
+        <div class="spinner"></div>
+    </div> -->
+  
     <div class="suggest">
         {%for re in result %}
             {%if re[0] == "system"%}
@@ -38,9 +43,9 @@
             {%endif%}
         {%endfor%}
     </div>
-    <div id="attention_word" class="attention_word">
+    <!-- <div id="attention_word" class="attention_word">
         >>> 選択した文章が入ります
-    </div>
+    </div> -->
     <!-- <div class="wrapper_user_textarea">
         <textarea class="user_textarea" name="reason" cols="20" rows="5" placeholder="メッセージを入力してください" required></textarea>
     </div> -->
@@ -70,7 +75,13 @@
                     {%for line in lines %}
                     <div class="wrapper-sentence">
                         <div class="checkbutton"><input type="checkbox" id = "{{line.index|safe}}" name="sent" value="{{line|safe}}"></div>
-                        <div class="sentence"><span>{{line.index}}</span><p>{{line.sentence}}</p></div>
+                        <div class="sentence">
+                            <span>{{line.index}}</span>
+                            {%for t in line.tag %}
+                                <div class="tag">{{t}}</div>
+                            {%endfor%}
+                            <p id="{{line.index|safe}}">{{line.sentence}}</p>
+                        </div>
                         <br>
                     </div>             
                     {%endfor%}
@@ -78,8 +89,8 @@
                 </div> 
             </div>
                     
-            <textarea class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
-            <input type="submit" class="js-close button-close">
+            <textarea id="reason" class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
+            <input id="submit" type="submit" class="js-close button-close">
             </form>
 
         </main>

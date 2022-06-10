@@ -1,4 +1,9 @@
 
+// window.onload = function() {
+// 	const spinner = document.getElementById('loading');
+// 	spinner.classList.add('loaded');
+// }
+
 
 window.document.onkeydown = function(event){
 	if (event.key === 'Enter') {
@@ -9,10 +14,21 @@ window.document.onkeydown = function(event){
 		var span = document.createElement("span");
 		span.style.color = "#ff0000";
 		range.surroundContents(span);
+		var id = "#" + range.startContainer.id;
 
 		//チャットボックスに表示
-		var message = document.getElementById("attention_word");
-		message.innerHTML = ">>>" + range.toString();
+		// var message = document.getElementById("attention_word");
+		var message = document.getElementById("reason");
+		var text = "＞＞＞" + range.toString();
+		message.innerHTML = text;
+
+		// var xhr = new XMLHttpRequest();
+		// xhr.open("POST", '/server', true);
+		// xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		// xhr.send("name="+text);
+
+		document.getElementById("submit").click();
+
 	}
 }
 
