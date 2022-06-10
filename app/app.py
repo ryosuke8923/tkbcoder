@@ -6,17 +6,41 @@ import os
 import random
 import ast
 import shutil
+import re
+from . import code
 ######
 
 my_path = '/Users/saitouryousuke/prog/python/tkbcoder/app/'
 
+class System:
+
+    def __init__(self):
+        self.comment = {
+            "few_code":"申し訳ありません．まだデータが少なくて分析できません．他の例も教えてください",
+            "instraction":"""
+            面白いと思ったフレーズの範囲を指定して，Enterで決定してください　　　　＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+            ＄分析→分析を開始する　　　　　
+            $コード→現在登録されているコードの表示　　　　　　　　　　　　　　　　　　　　　
+            $コード名＋文章番号→タグの登録
+            $コード名→そのコード名で登録されている行番号の表示""",
+            "plz_reason":"どうして興味を持ったのか理由を書いて教えてください",
+            "plz_other_example":"理由を教えてくれてありがとうございます．他の例も教えてください",
+            "show_code_keyword":"コード名：{}　には＜{}＞という言葉も当てはまるかもしれません",
+            "show_code_sentences":"こちらの文章もチェックしてみてはどうですか？(同じコードとして追加したい文章については,「$コード＋文章番号」を入力しよう)　　　　　　　　　　　　{}",
+        }
+    
+    def register_code(self,code_name,index):
+        pass
+
+        
 #分析者用クラス
 class AnalystData:
     def __init__(self):
         self.reason2choice = {}
         self.reasons = []
         self.choice_texts = []
-        self.chat_data = []
+        self.chat_data = [["system",system.comment["instraction"]]]
+        self.phrase_reason = []
 
     def add_reason(self,reason):
         self.reasons.append(reason)
@@ -62,7 +86,7 @@ class QuestionnaireData:
     def make_html_data(self):
         html_data = []
         for i,k in enumerate(self.texts):
-            html_data.append({"index":i,"sentence":k})
+            html_data.append({"index":i,"sentence":k,"tag":[]})
         self.html_data = html_data
 
     def file_save(self,f):
@@ -80,12 +104,13 @@ def make_dir(path):
 app = Flask(__name__)
 
 #オブジェクトの初期化
+system = System()
 questionnaire_data = QuestionnaireData()
 analyst_data = AnalystData()
 
 @app.route("/",methods=["GET","POST"])
 def index():   
-    global questionnaire_data,analyst_data
+    global questionnaire_data,analyst_data,system
     if request.method == "POST":
         #postされたファイルオブジェクト取得
         f = request.files["file"]
@@ -102,15 +127,18 @@ def index():
                 return render_template(
                     'result.html',
                     file_name=questionnaire_data.file_name,
-                    lines=questionnaire_data.html_data)        
+                    lines=questionnaire_data.html_data,
+                    result=analyst_data.chat_data)        
         else:
             return render_template('index.html')
     else:
         #（仮）/ページがGETされた時，すなわちトップページに戻ってきたらデータ初期化するように設定しておく
+        system = System()
         questionnaire_data = QuestionnaireData()
         analyst_data = AnalystData()
         #フォルダの初期化
         make_dir(my_path) 
+        
         return render_template("index.html")
 
 @app.route("/result",methods=["GET","POST"])
@@ -119,15 +147,39 @@ def result():
         tmp_reason = request.form.get("reason")
         #分析者が選択した文章と理由の取得＆処理
         analyst_data.add_data(request.form.get('reason'),request.form.getlist('sent'))
+        
         #分析者の投稿を保存
         if tmp_reason != "":
-            analyst_data.chat_data.append(["analyst",tmp_reason])
-            system_return = False
-            #システム側からの返事を保存
-            if system_return:
-                pass
+            #投稿された言葉によって条件分け
+            if re.match(r"^＞＞＞",tmp_reason) :
+                analyst_data.chat_data.append(["analyst_phrase",tmp_reason])
+                tmp_reason = re.sub(r"^＞＞＞","",tmp_reason)
+                analyst_data.phrase_reason.append([tmp_reason])
+                comment = system.comment["plz_reason"]
+            elif tmp_reason == "＄分析" or tmp_reason == "$分析":
+                if len(analyst_data.phrase_reason) >= 1 :
+                    code_obj = code.Code(csv_file=questionnaire_data.file_name,my_path=my_path)
+                    keywords,sentences,i_lst = code_obj.estimate()
+                    analyst_data.chat_data.append(["analyst_other",tmp_reason])
+                    analyst_data.chat_data.append(["system",system.comment["show_code_keyword"].format("つくば市へのイメージ",keywords)])
+                    analyst_data.chat_data.append(["system",system.comment["show_code_sentences"].format(sentences)])
+                    for index in i_lst:
+                        code_name = "つくば市のイメージ"
+                        if code_name not in questionnaire_data.html_data[index]["tag"]:
+                            questionnaire_data.html_data[index]["tag"].append(code_name)
+                    for index in [2,3,8,10,11,12]:
+                        code_name = "hogehoge"
+                        if code_name not in questionnaire_data.html_data[index]["tag"]:
+                            questionnaire_data.html_data[index]["tag"].append(code_name)
+                    comment = "なし"
+                else:
+                    comment = system.comment["few_code"]
             else:
-                comment = "ふむふむ"
+                analyst_data.chat_data.append(["analyst_reason",tmp_reason])
+                if analyst_data.phrase_reason != []:
+                    analyst_data.phrase_reason[-1].append(tmp_reason)
+                comment = system.comment["plz_other_example"]
+            if comment != "なし":
                 analyst_data.chat_data.append(["system",comment])
         else:
             pass
@@ -139,7 +191,7 @@ def result():
             tmp_reason = tmp_reason
         )
     else:
-        print(analyst_data.chat_data)
+        print(analyst_data.phrase_reason)
         if questionnaire_data.html_data==None:
             lines = [{"index":999,"sentence":"データがありません"}]
         else:
@@ -155,3 +207,9 @@ def result():
 def history():
     analyst_data.save()
     return render_template("history.html",history_datas=analyst_data.reason2choice)
+
+
+@app.route("/server",methods=["POST"])
+def server():
+    name = request.form["name"]
+    return redirect(url_for("result",name=name))

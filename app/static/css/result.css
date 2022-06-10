@@ -21,7 +21,7 @@
       top: 0;
       right: 0;
       width: 19vw;
-      height: 80vh;
+      height: 83.5vh;
       /* bottom: 0; */
       overflow-y: auto;
       font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","Helvetica Neue", "Lucida Sans Unicode", "Arial";
@@ -41,7 +41,7 @@
     float: left;
     width: 100%;
     margin-left: 62px;
-    background: white;
+    background: #FFFFCC;
     color: black;
     font-size: 0.7rem;
 }
@@ -101,6 +101,7 @@
       vertical-align:top;
       border-bottom: solid;
       font-size: 1vw;
+      
   }
   
   .sentence > span {
@@ -160,3 +161,72 @@
     margin-left: 2%;
     margin-top: 2%;
   }
+
+  .suggest_content > p{
+    word-break:break-all;
+  }
+
+  /* ローディング画面 */
+#loading {
+  width: 100vw;
+  height: 100vh;
+  transition: all 1s;
+  background-color: #0bd;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+.spinner {
+  width: 100px;
+  height: 100px;
+  margin: 200px auto;
+  background-color: #fff;
+  border-radius: 100%;
+  animation: sk-scaleout 1.0s infinite ease-in-out;
+}
+/* ローディングアニメーション */
+@keyframes sk-scaleout {
+  0% {
+    transform: scale(0);
+  } 100% {
+    transform: scale(1.0);
+    opacity: 0;
+  }
+}
+.loaded {
+  opacity: 0;
+  visibility: hidden;
+}
+
+
+.tag {
+  position: relative;
+  display: inline-block;
+  height: 32px;
+  margin-left: 50px;
+  padding: 1rem 2rem 1rem 3rem;
+  color: #fff;
+  background: #fa4141;
+}
+
+.tag:before {
+  position: absolute;
+  top: 0;
+  left: -30px;
+  content: '';
+  border-width: 32px 30px 32px 0;
+  border-style: solid;
+  border-color: transparent #fa4141 transparent transparent;
+}
+
+.tag:after {
+  position: absolute;
+  top: calc(50% - 7px);
+  left: -10px;
+  width: 14px;
+  height: 14px;
+  content: '';
+  border-radius: 50%;
+  background: #fff;
+}
