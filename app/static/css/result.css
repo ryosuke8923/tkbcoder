@@ -18,10 +18,10 @@
       position:fixed;
       z-index: 3;
       background-color:#769ece;
-      top: 0;
+      top: 10%;
       right: 0;
       width: 19vw;
-      height: 83.5vh;
+      height: 74vh;
       /* bottom: 0; */
       overflow-y: auto;
       font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","Helvetica Neue", "Lucida Sans Unicode", "Arial";
@@ -203,7 +203,7 @@
 .tag {
   position: relative;
   display: inline-block;
-  height: 32px;
+  height: 50px;
   margin-left: 50px;
   padding: 1rem 2rem 1rem 3rem;
   color: #fff;
@@ -229,4 +229,74 @@
   content: '';
   border-radius: 50%;
   background: #fff;
+}
+
+#cy {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 81vw;
+  height:100vh;
+  background-color:#B0C4DE;
+}
+
+#cy_button {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  right: 0;
+  width: 19vw;
+  height:10vh;
+  background-color:#B0C4DE;
+}
+
+.kk {
+  display       : inline-block;
+  border-radius : 5%;          /* 角丸       */
+  font-size     : 18pt;        /* 文字サイズ */
+  text-align    : center;      /* 文字位置   */
+  cursor        : pointer;     /* カーソル   */
+  padding       : 12px 12px;   /* 余白       */
+  background    : #000066;     /* 背景色     */
+  color         : #ffffff;     /* 文字色     */
+  line-height   : 1em;         /* 1行の高さ  */
+  transition    : .3s;         /* なめらか変化 */
+  box-shadow    : 6px 6px 3px #666666;  /* 影の設定 */
+  border        : 2px solid #000066;    /* 枠の指定 */
+  margin-left: 30px;
+  margin-top: 30px;
+}
+.kk:hover {
+  box-shadow    : none;        /* カーソル時の影消去 */
+  color         : #000066;     /* 背景色     */
+  background    : #ffffff;     /* 文字色     */
+}
+
+.modal{
+  display: none;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+.modal_back{
+  background:#000066;
+  left: 50%;
+  padding: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  height: 15vh;
+  width: 33%;
+}
+.modal__content{
+  background: #fff;
+  color: black;
+  left: 50%;
+  padding: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 30%;
 }
