@@ -7,10 +7,10 @@ html {
     margin:0;
     padding:0;
      /* chromeでfix付かない原因 */
-    -webkit-perspective: 1px;
-    perspective: 1px;
-    -webkit-transform-style: preserve-3d;
-    transform-style: preserve-3d;
+    /* -webkit-perspective: 1px;
+    perspective: 1px; */
+    /* -webkit-transform-style: preserve-3d; */
+    /* transform-style: preserve-3d; */
      /*=======================*/
     height: 100%;
     overflow-y: scroll;
