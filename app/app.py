@@ -112,7 +112,7 @@ system = System()
 questionnaire_data = QuestionnaireData()
 analyst_data = AnalystData()
 user_hiright = []
-# graph_obj = sent_bert.SentBert()
+graph_obj = sent_bert.SentBert()
 node2index = {
     "大学の運営に少なからず不自由な面がある":3,
     '永田学長が思う大学の役割':10,
