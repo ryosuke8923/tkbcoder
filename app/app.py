@@ -195,11 +195,21 @@ graph = {
 #         {"data":{'source': 'テスト1', 'target': 'テスト2'}},
 #     ]
 # }
-
+recommends = [
+    ["1","推薦文章1","tag1"],
+    ["2","推薦文章2","tag2"],
+    ["3","推薦文章3","tag3"],
+    ["4","推薦文章4","tag4"],
+    ["1","推薦文章1","tag1"],
+    ["2","推薦文章2","tag2"],
+    ["3","推薦文章3","tag3"],
+    ["4","推薦文章4","tag4"],
+]
 
 @app.route("/",methods=["GET","POST"])
 def index():   
     global questionnaire_data,analyst_data,system,user_hiright,graph
+
     if request.method == "POST":
         #postされたファイルオブジェクト取得
         f = request.files["file"]
@@ -213,13 +223,15 @@ def index():
                 with open(questionnaire_data.file_path,"r") as f:
                     questionnaire_data.texts = f.readlines()
                 questionnaire_data.make_html_data()
-                return render_template(
-                    'result.html',
-                    file_name=questionnaire_data.file_name,
-                    lines=questionnaire_data.html_data,
-                    result=analyst_data.chat_data,
-                    graph=graph,
-                    hiright=user_hiright)  
+                # return render_template(
+                #     'result.html',
+                #     file_name=questionnaire_data.file_name,
+                #     lines=questionnaire_data.html_data,
+                #     result=analyst_data.chat_data,
+                #     graph=graph,
+                #     hiright=user_hiright,
+                #     recommends = recommends)  
+                return redirect(url_for("result"))
         else:
             return render_template('index.html')
     else:
@@ -237,6 +249,7 @@ def index():
 @app.route("/result",methods=["GET","POST"])
 def result():
     global user_hiright,graph
+    print(111)
     if request.method == "POST":
         print(11111111)
         tmp_reason = request.form.get("reason")
@@ -258,21 +271,30 @@ def result():
             file_name=questionnaire_data.file_name,
             lines=questionnaire_data.html_data,
             result=analyst_data.chat_data,
-            tmp_reason = tmp_reason
+            tmp_reason = tmp_reason,
+            recommends = recommends
         )
     else:
         if questionnaire_data.html_data==None:
             lines = [{"index":999,"sentence":"データがありません"}]
         else:
             lines = questionnaire_data.html_data
-            print(lines)
+        print(222,user_hiright)
+        # import random
+        # recommends = [
+        #     [["d","d","d"],["d","d","d"]],
+        #     [["e","e","e"],["e","e","e"]]
+        # ]
+        # recommends = random.sample(recommends,1)
+        print(recommends)
         return render_template(
             "result.html",
             file_name=questionnaire_data.file_name,
             lines=lines,
             result=analyst_data.chat_data,
             graph=graph,
-            hiright = user_hiright
+            hiright = user_hiright,
+            recommends = recommends
         )
 
 @app.route("/history",methods=["GET"])
@@ -284,6 +306,7 @@ def history():
 @app.route("/hiright",methods=["POST"])
 def hiright():
     global user_hiright
+    print("hiright")
     tmp_dic = {
         "id":request.form["a"],
         "startOffset":request.form["b"],
@@ -291,7 +314,7 @@ def hiright():
         "text":request.form["d"]
     }
     user_hiright.append(tmp_dic)
-    print(tmp_dic)
+    # print(tmp_dic)
     return redirect(url_for("result"))
 
 @app.route("/memo",methods=["POST"])
@@ -320,4 +343,10 @@ def node_tag():
         node = node2index[tmp_node]
     if node != "" and tag != "":
         questionnaire_data.add_tag(node,tag)
+    return redirect(url_for("result"))
+
+@app.route("/input_tag",methods=["POST"])
+def input_tag():
+    tmp_tag = request.form["input_tag"]
+    print(tmp_tag)
     return redirect(url_for("result"))

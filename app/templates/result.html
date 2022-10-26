@@ -28,12 +28,8 @@
 </head>
 
 <body>
-    <!-- ローディング画面 -->
-    <!-- <div id="loading">
-        <div class="spinner"></div>
-    </div> -->
-    <input id="cy_button" type="button" onclick="show_cy()" value="グラフを確認する">
-    <!-- <div class="cy"></div> -->
+    <!---chatbot -->
+    <!-- <input id="cy_button" type="button" onclick="show_cy()" value="グラフを確認する">
     <div class="suggest" id="suggest">
         {%for re in result %}
             {%if re[0] == "system"%}
@@ -41,8 +37,6 @@
                     <div class="system left">
                         <img class="icon" src="static/img/system_icon.png" alt="">
                         <div class="suggest_content">
-                            <!-- <button type="button" onclick="location.href=#{{re.index|safe}}"></button> -->
-                            <!-- <a href="#{{re.index|safe}}"><span>{{re.index}}</span></a> -->
                             <p>{{re[1]}}</p>
                         </div>
                     </div>            
@@ -57,15 +51,36 @@
                 </div>
             {%endif%}
         {%endfor%}
-    </div>
+    </div> -->
     <!-- <div id="attention_word" class="attention_word">
         >>> 選択した文章が入ります
     </div> -->
     <!-- <div class="wrapper_user_textarea">
         <textarea class="user_textarea" name="reason" cols="20" rows="5" placeholder="メッセージを入力してください" required></textarea>
     </div> -->
+     <!---chatbot -->
+
+    <!----tagの推薦----->
+    <div class="suggest" id="suggest">
+        <div class="suggest_title"><p>こちらの文章はいかがですか？</p></div>
+        {%for rec in recommends %}
+            <div class="suggest_data" id="suggest_data_{{rec[0]|safe}}">    
+                <div class="suggest_id ">
+                        <p id="recommend_id_{{rec[0]|safe}}">{{rec[0]}}</p>
+                        <input type="button" class="apply" id="apply_{{rec[0]|safe}}" onclick="apply_recommend(this)" value="適用する" >  
+                        <input type="button" class="not_apply" id="apply_{{rec[0]|safe}}" onclick="apply_recommend(this)" value="適用しない" >
+                </div>
+                <div class="suggest_main">
+                    <p id="recommend_sentence_{{rec[0]|safe}}">文章：{{rec[1]}}</p>
+                    <p id="recommend_tag_{{rec[0]|safe}}">タグ：{{rec[2]}}</p>
+                </div>    
+            </div>
+        {%endfor%}
+    </div>
+    <!----tagの推薦----->
 
     <header>
+        <!---icon-->
         <div class="wrapper-menu">
             <form action="/" method="GET">
                 <button i class="fa-solid fa-house"><span>Home</span></button>
@@ -75,42 +90,42 @@
             </form>
             <form action="/result" method="GET">
                 <button i class="fas fa-chart-line"><span>Analysis</span></button>
-            </form>
+            </form> 
         </div>
-        <h1>TKBCoder</h1>
-        
+        <!---icon-->
+
+        <!---modalを仕込むためのもの-->
+        <div class="hidden_modal_icon">
+            <div class="content">
+                <div class="js-modal-open kk" href="">{{t}}</div>
+            </div> 
+            <div class="modal js-modal">
+                <div class="modal__content">
+                    <div class="modal_content_p">
+                        <p class="p1">タグを入力してください</p>
+                        <p class="p2">＊ Shift+Enterで送信できます</p>
+                    </div>
+                    <input type="text"  class="input_tag_text" id="input_tag_text"  />
+                    <input type="button" class="input_tag_button" id="input_tag_button" onclick="input_tag()" value="送信">
+                    </div>
+                   
+                </div>
+            </div>
+        </div>
+         <!---modalを仕込むためのもの-->
+
+        <h1>TKBCoder</h1>    
     </header>
     
         <main>
-            <!-- <form action="/result" method="POST" enctype="multipart/form-data"> -->
-            <!-- <form action="#"> -->
             <div class="wrapper-content">
                 <div class="sentences">
                     <div class="file_name"><p>ファイル名：{{file_name}}</p></div>
-                    <!-- <form name="test"> -->
                     {%for line in lines %}
                     <div class="wrapper-sentence">
-                        <!-- <div class="checkbutton"><input type="checkbox" id = "{{line.index|safe}}" name="sent" value="{{line|safe}}"></div> -->
                         <div class="sentence">
                             <span>{{line.index}}</span>
-                            {%for t in line.tag %}
-                                <!-- <input type="button" class="kk" value="{{t|safe}}" onclick=""> -->
-                                <div class="content">
-                                    <div class="js-modal-open kk" href="">{{t}}</div>
-                                </div>
-                                <div class="modal js-modal">
-                                    <div class="modal_back"></div>
-                                    <div class="modal__bg js-modal-close"></div>
-                                    <div class="modal__content">
-                                        <p>このタグを削除してもよろしいですか？</p>
-                                        <!-- <p>{{t}}</p> -->
-                                        <button class="js-modal-close ok" href="">ok</button>
-                                        <button class="js-modal-close no" href="">No</button>
-                                    </div><!--modal__inner-->
-                                </div><!--modal-->
-                                <!-- <div class="tag">{{t}}</div> -->
-                            {%endfor%}
-                            <p id="{{line.index|safe}}">{{line.sentence}}</p>
+                            <p class="sentence_content" id="{{line.index|safe}}">{{line.sentence}}</p>
                         </div>
                         <br>
                     </div>             
@@ -118,12 +133,8 @@
                     <!-- </form> -->
                 </div> 
             </div>
-            <!-- <input type="textarea" id="reason"  class="textarea" name="reason"  placeholder="メッセージを入力してください"> -->
             <textarea id="reason" class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
-            <!-- <input id="submit" type="submit" class="js-close button-close"> -->
             <input type="button" id="submit" class="js-close button-close" onclick="get_message()" value="送信">
-            <!-- </form> -->
-
         </main>
 </body>
 </html>

@@ -54,12 +54,14 @@ html {
   }
   header p {
     background-color: hsla(0, 0%, 100%,0.1);
+   
   }
 
   header h1{
     top:0;
     font-size: 5em;
     text-align: center;
+    width: 100vw;
   }
   main {
     background-color: hsl(60, 10%, 10%);
@@ -77,6 +79,7 @@ html {
     width: 100%;
     display: flex;
 }
+
   .fa-house{
     position: relative;
     border:solid;

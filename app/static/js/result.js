@@ -11,15 +11,76 @@ if (hiright==[]){
 	x = x.replace(/\'/g, "\"");
 	console.log(x);
 	hiright = JSON.parse(x);
-	console.log(hiright);
+	console.log(1,hiright);
 	console.log(JSON.parse(x));
 }
 
 // console.log(node);
 // console.log(edge);
 
-window.onload = function() {
+//==========分析者がタグを送信してきた場合=================
+function input_tag(){
+	//分析者の入力内容を受け取る
+	let input_tag = document.getElementById("input_tag_text").value;
+	//非同期通信によるデータの送信
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", '/input_tag', true);
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	xhr.send("input_tag="+input_tag);
+	//フォームの入力値を初期化しておく
+	document.getElementById("input_tag_text").value = '';
+	//フォームを消す
+	$('.js-modal').fadeOut();
+	location.reload();
 	
+}
+//==========分析者がタグを送信してきた場合=================
+
+// =====推薦候補に対して分析者のアクションがあった場合========
+function apply_recommend(e){
+	// 押したボタンの推薦文章とタグを抽出するためのパターン
+	let regexp1 = /(?<=文章：).+/;
+	let regexp2 = /(?<=タグ：).+/;
+	let regexp_id = /(?<=apply_).+/;
+	// id取得
+	let id = regexp_id.exec(e.id)[0];
+	if(e.className == "apply"){
+		// 1→文章に関するもの 2→タグに関するもの
+		let string1 = "recommend_sentence_"+id;
+		let string2 = "recommend_tag_"+id
+		let sentence1 = document.getElementById(string1).textContent;
+		let sentence2 = document.getElementById(string2).textContent;
+		let result1 = regexp1.exec(sentence1);
+		let result2 = regexp2.exec(sentence2);
+		// タグ付与操作
+		console.log(result1[0],result2[0]);
+		console.log("操作します");
+	}
+	// フロント上の削除
+	let string = "#suggest_data_"+id
+	console.log(string);
+	$(string).remove();
+
+	//flaskでの削除
+}
+// =====推薦候補に対して分析者のアクションがあった場合========
+
+
+window.addEventListener("load", function(){
+	// ストレージチェック
+	let x = localStorage.getItem("x")
+	let y = localStorage.getItem("y")
+	console.log(x,y);
+	// 前回の保存データがあればスクロールする
+	if(y !== null){
+		console.log(8888)
+	}
+
+	// スクロール時のイベント設定
+});
+// ================タグ付与部分の再現====================
+window.onload = function() {
+
 	for(let i = 0; i < hiright.length; i++){
 		console.log(hiright[i])
 		const a = hiright[i].id
@@ -27,12 +88,14 @@ window.onload = function() {
 		const c = hiright[i].endOffset;
 		const d = hiright[i].text;
 
-
+		console.log(a)
 		// idでノードを取得
 		let foo = document.getElementById(Number(a));
-		console.log(foo);
+		console.log(1,foo);
 		let reg = new RegExp(d);
 		console.log(1);
+		// let start_index = foo.firstChild.data.match(reg).index;
+		console.log(reg)
 		let start_index = foo.firstChild.data.match(reg).index;
 		console.log(foo);
 		console.log(2);
@@ -48,40 +111,35 @@ window.onload = function() {
 		ra.surroundContents(span);
 	}
 }
+// ================タグ付与部分の再現====================
+
 
 let tmp_range = "";
 let tmp_node = "";
 //テキスト範囲選択
+
+
+// ===================キーイベント======================
 window.document.onkeydown = function(event){
+	// shift+enterでタグ送信
+	if (event.shiftKey && event.key === 'Enter') {
+		if(document.getElementById("input_tag_text").value != "");{
+			document.getElementById("input_tag_button").click();
+		}
+		return false;
+	}
+	// 範囲選択＋enterでタグを付与する文章の選択&タグ入力フォーム出現
 	if (event.key === 'Enter') {
+        
 		//指定した範囲のテキストの文字を変更
 		var selObj = window.getSelection();
 		if (selObj == '') {return false;}
+	
 		var range = selObj.getRangeAt(0);
 		var span = document.createElement("span");
+		
 		span.style.color = "#ff0000";
 		range.surroundContents(span);
-		// var id = "#" + range.startContainer.id;
-
-		//idでノードを取得
-		// const foo = document.getElementById(a);
-		//新たにRangeオブジェクトを作成→スタート・エンドを決定.
-		// var ra = new Range();
-		// ra.setStart(foo,b);
-		// ra.setEnd(foo,c);
-
-		//テキスト化
-		// const text = range.toString();
-		// console.log(text); 
-
-		//チャットボックスに表示
-		// var message = document.getElementById("attention_word");
-		
-		// var message = document.getElementById("reason");
-		// var text = "＞＞＞" + range.toString();
-		// message.innerHTML = text;
-		// document.getElementById("submit").click();
-
 
 		const a = range.startContainer.id;
 		const b = range.startOffset;
@@ -93,54 +151,55 @@ window.document.onkeydown = function(event){
 		xhr.open("POST", '/hiright', true);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhr.send("a="+a+"&b="+b+"&c="+c+"&d="+d);
-
-		
-
+		//タグ入力フォーム出現
+		$('.js-modal').fadeIn();
+		var targetElement = document.getElementById( a ) ;
+		var clientRect = targetElement.getBoundingClientRect() ;
+		var x = clientRect.left ;
+		var y = clientRect.top ;
+		localStorage.setItem("x", x);
+		localStorage.setItem("y", y);
 	}
 }
+// ===================キーイベント======================
 
-//メモ送信した時
-function get_message(j=""){
-	const textbox = document.getElementById("reason");
-	let memo = textbox.value;
-	if (j==""){
-		let show_memo = tmp_range + "　"+ memo;
-		const x = "<div class='user_comment'><div class='user right'><div class='suggest_content' id='suggest_content'><p>"+show_memo+"</p></div></div></div>";
+// ===================メモ送信した時====================
+// function get_message(j=""){
+// 	const textbox = document.getElementById("reason");
+// 	let memo = textbox.value;
+// 	if (j==""){
+// 		let show_memo = tmp_range + "　"+ memo;
+// 		const x = "<div class='user_comment'><div class='user right'><div class='suggest_content' id='suggest_content'><p>"+show_memo+"</p></div></div></div>";
 	
-		let y = document.getElementById("suggest");
-		y.insertAdjacentHTML("beforeend",x);
-	}
+// 		let y = document.getElementById("suggest");
+// 		y.insertAdjacentHTML("beforeend",x);
+// 	}
 	// /memo にデータを送信 
-	let pattern = /^\$TAG\$/g; 
-	if(memo.match(pattern)){
-		console.log(12);
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", '/node_tag', true);
-		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		if(j== ""){
-			xhr.send("node="+tmp_range+"&tag="+memo);
-		}else{
-			xhr.send("node="+j+"&tag="+memo);
-		}	
-		document.getElementById("reason").value = "";
+	// let pattern = /^\$TAG\$/g; 
+	// if(memo.match(pattern)){
+	// 	console.log(12);
+	// 	var xhr = new XMLHttpRequest();
+	// 	xhr.open("POST", '/node_tag', true);
+	// 	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	// 	if(j== ""){
+	// 		xhr.send("node="+tmp_range+"&tag="+memo);
+	// 	}else{
+	// 		xhr.send("node="+j+"&tag="+memo);
+	// 	}	
+	// 	document.getElementById("reason").value = "";
 	
-	}else{
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", '/memo', true);
-		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		xhr.send("memo="+memo+"&tmp_range="+tmp_range);
-		document.getElementById("reason").value = "";
-		console.log(10);
-	}
-	// var xhr = new XMLHttpRequest();
-	// xhr.open("POST", '/memo', true);
-	// xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	// xhr.send("memo="+memo+"&tmp_range="+tmp_range);
+// 	}else{
+// 		var xhr = new XMLHttpRequest();
+// 		xhr.open("POST", '/memo', true);
+// 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+// 		xhr.send("memo="+memo+"&tmp_range="+tmp_range);
+// 		document.getElementById("reason").value = "";
+// 		console.log(10);
+// 	}
+// }
+// ===================メモ送信した時====================
 
-	// document.getElementById("reason").value = "";
-
-}
-
+// =========グラフの表示(make_cy内で呼び出される)=========
 function show_cy(){
 	let div1 = document.getElementById("cy_button");
 	if(div1.value == "グラフを閉じる"){
@@ -156,7 +215,10 @@ function show_cy(){
 	}
 	
 }
+// =========グラフの表示(make_cy内で呼び出される)=========
 
+
+// ===============グラフノードの作成====================
 function make_cy(node,edge){
 	var cy = cytoscape({
 		container: document.getElementById('cy'),
@@ -214,21 +276,4 @@ function make_cy(node,edge){
 		}
 	  });
 }
-
-
-$(function(){
-    $('.js-modal-open').on('click',function(){
-        $('.js-modal').fadeIn();
-        return false;
-    });
-    $('.js-modal-close').on('click',function(){
-        $('.js-modal').fadeOut();
-        return false;
-    });
-	$(".ok").on("click",function(){
-		alert("ok");
-	});
-	$(".no").on("click",function(){
-		alert("No");
-	});
-});
+// ===============グラフノードの作成====================

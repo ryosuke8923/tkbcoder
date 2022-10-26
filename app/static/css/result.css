@@ -3,7 +3,12 @@
     background-color:hsl(60, 10%, 10%); 
     z-index: 10;
   }
-  
+  header h1{
+    top:0;
+    font-size: 5em;
+    text-align: center;
+    width: 80vw;
+  }
   main {
     height: 100%;
   }
@@ -13,15 +18,15 @@
       width: 80vw;
       display: inline-block;
   }
-
+ 
   .suggest {
       position:fixed;
-      z-index: 3;
+      z-index: 100;
       background-color:#769ece;
-      top: 10%;
+      top: 0;
       right: 0;
       width: 19vw;
-      height: 74vh;
+      height: 100vh;
       /* bottom: 0; */
       overflow-y: auto;
       font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","Helvetica Neue", "Lucida Sans Unicode", "Arial";
@@ -273,30 +278,100 @@
   background    : #ffffff;     /* 文字色     */
 }
 
+.hidden_modal_icon{
+  position: fixed;
+  z-index: 10;
+  top: 5;
+  width: 100vw;
+  height: 10vh;
+}
+.hidden_modal_icon > .content{
+  position: absolute;
+  right: 0;
+
+}
 .modal{
   display: none;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-.modal_back{
-  background:#000066;
-  left: 50%;
-  padding: 40px;
+  height: 10vh;
   position: absolute;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  height: 15vh;
-  width: 33%;
+  top:-120%;
+  left: 0;
+  width: 60vw;
 }
+
 .modal__content{
-  background: #fff;
+  background: #B0C4DE;
   color: black;
-  left: 50%;
+  left: 38%;
   padding: 40px;
   position: absolute;
-  top: 50%;
+  top: 10%;
   transform: translate(-50%,-50%);
-  width: 30%;
+  width: 70%;
+  height: 7vh;
+  text-align: center;
+  display: flex;
+}
+
+.modal_content_p > .p1 {
+  background-color: #B0C4DE;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  height: 5vh;
+  width: 18vw;
+  margin-top: -3vh;
+
+}
+
+.modal_content_p > .p2{
+  background-color: #B0C4DE;
+  text-align: center;
+  margin-top: -3vh;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.input_tag_text {
+  width: 40vw;
+  margin-left: 3vw;
+  text-align: left;
+}
+
+.suggest_title {
+  color: black;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(transparent 50%, orange 50%);
+}
+
+.suggest_data {
+  position: relative;
+  color: black;
+  margin: auto;
+  width: 80%;
+  margin-bottom: 5vh;
+  background-color: white;
+  
+  border-left :solid 10px orange;
+  /*余白をつけておきます*/
+  padding: 10px;  
+}
+.suggest_id {
+  position: absolute;
+  top: 3;
+  left: 3;
+  height: 3vh;
+  width: 10vw;
+  display: flex;
+}
+
+.suggest_main {
+  height: 10vh;
+  margin-top: 5vh;
+}
+
+.apply {
+  margin-left: 1vw;
 }
