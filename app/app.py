@@ -112,6 +112,7 @@ system = System()
 questionnaire_data = QuestionnaireData()
 analyst_data = AnalystData()
 user_hiright = []
+tags={}
 graph_obj = sent_bert.SentBert()
 node2index = {
     "大学の運営に少なからず不自由な面がある":3,
@@ -196,15 +197,20 @@ graph = {
 #     ]
 # }
 recommends = [
-    ["1","推薦文章1","tag1"],
-    ["2","推薦文章2","tag2"],
-    ["3","推薦文章3","tag3"],
-    ["4","推薦文章4","tag4"],
-    ["1","推薦文章1","tag1"],
-    ["2","推薦文章2","tag2"],
-    ["3","推薦文章3","tag3"],
-    ["4","推薦文章4","tag4"],
+    ["0","テキスト","街"],
 ]
+
+
+
+def make_tag2sent(tags,user_hiright):
+    for i in range(len(user_hiright)):
+        if user_hiright[i]["tag"] not in tags and user_hiright[i]["tag"] != "":
+            tags[user_hiright[i]["tag"]] = [user_hiright[i]["text"]]
+        else:
+            if user_hiright[i]["text"] not in tags[user_hiright[i]["tag"]]:
+                tags[user_hiright[i]["tag"]].append(user_hiright[i]["text"])
+
+
 
 @app.route("/",methods=["GET","POST"])
 def index():   
@@ -249,9 +255,7 @@ def index():
 @app.route("/result",methods=["GET","POST"])
 def result():
     global user_hiright,graph
-    print(111)
     if request.method == "POST":
-        print(11111111)
         tmp_reason = request.form.get("reason")
         #分析者が選択した文章と理由の取得＆処理
         analyst_data.add_data(request.form.get('reason'),request.form.getlist('sent'))
@@ -272,21 +276,23 @@ def result():
             lines=questionnaire_data.html_data,
             result=analyst_data.chat_data,
             tmp_reason = tmp_reason,
-            recommends = recommends
+            recommends = recommends,
+            tags = tags
         )
     else:
+        if user_hiright != [] and user_hiright[-1]["tag"] != "":
+            make_tag2sent(tags,user_hiright)
+            print(tags)
         if questionnaire_data.html_data==None:
             lines = [{"index":999,"sentence":"データがありません"}]
         else:
             lines = questionnaire_data.html_data
-        print(222,user_hiright)
         # import random
         # recommends = [
         #     [["d","d","d"],["d","d","d"]],
         #     [["e","e","e"],["e","e","e"]]
         # ]
         # recommends = random.sample(recommends,1)
-        print(recommends)
         return render_template(
             "result.html",
             file_name=questionnaire_data.file_name,
@@ -294,7 +300,8 @@ def result():
             result=analyst_data.chat_data,
             graph=graph,
             hiright = user_hiright,
-            recommends = recommends
+            recommends = recommends,
+            tags = tags
         )
 
 @app.route("/history",methods=["GET"])
@@ -306,15 +313,16 @@ def history():
 @app.route("/hiright",methods=["POST"])
 def hiright():
     global user_hiright
-    print("hiright")
     tmp_dic = {
         "id":request.form["a"],
         "startOffset":request.form["b"],
         "endOffset":request.form["c"],
-        "text":request.form["d"]
+        "text":request.form["d"],
+        "tag":"",
     }
-    user_hiright.append(tmp_dic)
-    # print(tmp_dic)
+    if tmp_dic not in user_hiright:
+        user_hiright.append(tmp_dic)
+    print(user_hiright)
     return redirect(url_for("result"))
 
 @app.route("/memo",methods=["POST"])
@@ -348,5 +356,27 @@ def node_tag():
 @app.route("/input_tag",methods=["POST"])
 def input_tag():
     tmp_tag = request.form["input_tag"]
-    print(tmp_tag)
+    if  user_hiright[-1]["tag"] == "":
+        user_hiright[-1]["tag"] = tmp_tag
+    print(user_hiright)
+    return redirect(url_for("result"))
+
+@app.route("/remove_tag",methods=["POST"])
+def remove_tag():
+    tmp_text = request.form["remove_tag"]
+    for i in range(len(user_hiright)):
+        if user_hiright[i]["text"] == tmp_text:
+            user_hiright.pop(i)
+            break
+    print(user_hiright)
+    return redirect(url_for("result"))
+
+@app.route("/remove_recommend",methods=["POST"])
+def remove_recommend():
+    tmp_text = request.form["remove_recommend"]
+    for i in range(len(recommends)):
+        if recommends[i][1] == tmp_text:
+            recommends.pop(i)
+            break
+    print(recommends)
     return redirect(url_for("result"))

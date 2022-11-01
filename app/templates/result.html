@@ -21,7 +21,7 @@
     </script>
     <script type="text/javascript" src="../static/js/result.js"></script>
     <link rel="stylesheet" href="../static/css/main.css">
-    <link rel="stylesheet" href="../static/css/result.css">
+    <link id="stylesheet" rel="stylesheet" href="../static/css/result.css">
     <script src="https://kit.fontawesome.com/25e48f69d0.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
     <title>TKB Coder</title>
@@ -60,28 +60,48 @@
     </div> -->
      <!---chatbot -->
 
+
     <!----tagの推薦----->
     <div class="suggest" id="suggest">
         <div class="suggest_title"><p>こちらの文章はいかがですか？</p></div>
         {%for rec in recommends %}
             <div class="suggest_data" id="suggest_data_{{rec[0]|safe}}">    
                 <div class="suggest_id ">
-                        <p id="recommend_id_{{rec[0]|safe}}">{{rec[0]}}</p>
+                        <a href="#{{rec[0]|safe}}"id="recommend_id_{{rec[0]|safe}}">{{rec[0]}}</a>
                         <input type="button" class="apply" id="apply_{{rec[0]|safe}}" onclick="apply_recommend(this)" value="適用する" >  
                         <input type="button" class="not_apply" id="apply_{{rec[0]|safe}}" onclick="apply_recommend(this)" value="適用しない" >
                 </div>
                 <div class="suggest_main">
-                    <p id="recommend_sentence_{{rec[0]|safe}}">文章：{{rec[1]}}</p>
-                    <p id="recommend_tag_{{rec[0]|safe}}">タグ：{{rec[2]}}</p>
+                    <p class="recommend_sentence" id="recommend_sentence_{{rec[0]|safe}}"> {{rec[1]}}</p>
+                    <p class="recommend_tag" id="recommend_tag_{{rec[0]|safe}}"> {{rec[2]}}</p>
                 </div>    
             </div>
         {%endfor%}
     </div>
     <!----tagの推薦----->
+    <div class="box">
+        <button onclick="all_tag(this)"i class="fa-solid fa-tag"><span>タグ一覧</span></button>
+        <div id="tag_modal" class="tag_modal">
+            <div class="tag_modal-content">
+                <div class="tag_modal-header">
+                  <h1>登録済みタグ一覧</h1>
+                  <button onclick="hidden_all_tag(this)"class="tag_modalClose">×</button>
+                </div>
+                <div class="tag_modal-body">
+                    {%for tag_sentence in tags%}
+                        <h2>{{tag_sentence}}</h2>
+                        {%for sentence in tags[tag_sentence]%}
+                            <p>{{sentence}}</p>
+                        {%endfor%}
+                    {%endfor%}
+                </div>
+              </div>
+        </div>
+    </div>
 
     <header>
         <!---icon-->
-        <div class="wrapper-menu">
+        <!-- <div class="wrapper-menu">
             <form action="/" method="GET">
                 <button i class="fa-solid fa-house"><span>Home</span></button>
             </form>
@@ -91,7 +111,7 @@
             <form action="/result" method="GET">
                 <button i class="fas fa-chart-line"><span>Analysis</span></button>
             </form> 
-        </div>
+        </div> -->
         <!---icon-->
 
         <!---modalを仕込むためのもの-->
@@ -118,24 +138,28 @@
     </header>
     
         <main>
+        
             <div class="wrapper-content">
                 <div class="sentences">
                     <div class="file_name"><p>ファイル名：{{file_name}}</p></div>
                     {%for line in lines %}
                     <div class="wrapper-sentence">
                         <div class="sentence">
-                            <span>{{line.index}}</span>
-                            <p class="sentence_content" id="{{line.index|safe}}">{{line.sentence}}</p>
+                            <!-- <span>{{line.index}}</span> -->
+                            <div id="{{line.index|safe}}" class="part_sentence">{{line.sentence}}</div>
+                            <!-- <p class="sentence_content" id="{{line.index|safe}}">{{line.sentence}}</p> -->
                         </div>
-                        <br>
+                        <!-- <br> -->
                     </div>             
                     {%endfor%}
+                    <div class="content_end"></div>
                     <!-- </form> -->
                 </div> 
             </div>
             <textarea id="reason" class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
             <input type="button" id="submit" class="js-close button-close" onclick="get_message()" value="送信">
         </main>
+    
 </body>
 </html>
 

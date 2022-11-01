@@ -62,6 +62,9 @@ html {
     font-size: 5em;
     text-align: center;
     width: 100vw;
+    font-family: monospace, monospace;
+    font-weight: bolder;
+    color:white;
   }
   main {
     background-color: hsl(60, 10%, 10%);

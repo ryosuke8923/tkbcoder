@@ -67,7 +67,7 @@
     cursor: pointer;
   }
   /* モーダルウィンドウ */
-.modal-window {
+/* .modal-window {
     　display: none;
       position: fixed;
       top: 80%;
@@ -78,8 +78,8 @@
       background-color: #dfdddd;
       border-radius: 5px;
       z-index: 11;
-      padding: 2rem;
-    }
+      padding: 2rem; */
+    /* } */
 
 .explanation{
     position:absolute;
@@ -91,8 +91,8 @@
     top: 0;
     color: black;
 }
-.textarea{
-    　display: none;
+/* .textarea{ */
+    /* 　display: none;
       position: fixed;
       font-size: 1.5em;
       top: 50%;
@@ -104,7 +104,7 @@
       border-radius: 5px;
       z-index: 11;
       padding: 2rem;
-}
+} */
   /* 閉じるボタン */
   .button-close {
     position: absolute;
