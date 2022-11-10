@@ -7,30 +7,16 @@ import random
 import ast
 import shutil
 import re
+from collections import defaultdict
 from . import sent_bert
+from . import recommend
+import datetime
+from docx import Document
 # from . import code
 ######
 
 my_path = '/Users/saitouryousuke/prog/python/tkbcoder/app/'
 
-class System:
-
-    def __init__(self):
-        self.comment = {
-            "few_code":"申し訳ありません．まだデータが少なくて分析できません．他の例も教えてください",
-            "instraction":"""
-            面白いと思ったフレーズの範囲を指定して，Enterで決定してください　　　　
-            ハイライトをつけることができます　　　　　
-            また，このチャットボックスにメモを残すことができます　　　　　　　　　　　　　　　　　　　　　
-            """,
-            "plz_reason":"どうして興味を持ったのか理由を書いて教えてください",
-            "plz_other_example":"理由を教えてくれてありがとうございます．他の例も教えてください",
-            "show_code_keyword":"コード名：{}　には＜{}＞という言葉も当てはまるかもしれません",
-            "show_code_sentences":"こちらの文章もチェックしてみてはどうですか？(同じコードとして追加したい文章については,「$コード＋文章番号」を入力しよう)　　　　　　　　　　　　{}",
-        }
-    
-    def register_code(self,code_name,index):
-        pass
 
         
 #分析者用クラス
@@ -39,7 +25,7 @@ class AnalystData:
         self.reason2choice = {}
         self.reasons = []
         self.choice_texts = []
-        self.chat_data = [["system",system.comment["instraction"]]]
+        self.chat_data = [["system","***"]]
         self.phrase_reason = []
 
     def add_reason(self,reason):
@@ -80,7 +66,7 @@ class QuestionnaireData:
     def __init__(self,file_name=None,file_path=None,texts=None,):
         self.file_name = file_name
         self.file_path = file_path
-        self.texts = texts
+        self.texts = None
         self.html_data = None
     
     def make_html_data(self):
@@ -97,110 +83,24 @@ class QuestionnaireData:
         self.html_data[int(index)]["tag"].append(tag)
 
 
-def make_dir(path):
-    target_dir = path + "files"
+def make_dir(path,dir_name):
+    target_dir = path + dir_name
     shutil.rmtree(target_dir)
     os.mkdir(target_dir)
-######
 
-
-#Flaskオブジェクトの生成
-app = Flask(__name__)
-
-#オブジェクトの初期化
-system = System()
-questionnaire_data = QuestionnaireData()
-analyst_data = AnalystData()
-user_hiright = []
-tags={}
-graph_obj = sent_bert.SentBert()
-node2index = {
-    "大学の運営に少なからず不自由な面がある":3,
-    '永田学長が思う大学の役割':10,
-    '個性が強い\u3000≒\u3000就職してからの夢を持てるかどうか':12,
-    '日本人学生に対して':15,
-    '若者に対する考え，少しは厳しい状況に身を置くべき':20,
-    '筑波大学キーワード':2,
-    '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）':4,
-    'ある部分において， 企業の上層部と大学の役員を同じような位置付けに置いている':6,
-    '永田学長の学長ぞうを象徴する言葉':8,
-    '教員に対する思い':10,
-    '大学の在り方':5,
-    '繰り返し言及している':6,
-    '分野の壁がないこと→教養教育において大事な環境':8
-}
-graph = {
-    "node":[
-        {'data': {'id': '大学の運営に少なからず不自由な面がある',"label":"0"}},
-        {'data': {'id': '永田学長が思う大学の役割',"label":"1"}},
-        {'data': {'id': '個性が強い\u3000≒\u3000就職してからの夢を持てるかどうか',"label":"2"}},
-        {'data': {'id': '日本人学生に対して',"label":"1"}},
-        {'data': {'id': '若者に対する考え，少しは厳しい状況に身を置くべき',"label":"0"}},
-        {'data': {'id': '筑波大学キーワード',"label":"1"}},
-        {'data': {'id': '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）',"label":"2"}},
-        {'data': {'id': 'ある部分において， 企業の上層部と大学の役員を同じような位置付けに置いている',"label":"1"}},
-        {'data': {'id': '永田学長の学長ぞうを象徴する言葉',"label":"1"}},
-        {'data': {'id': '教員に対する思い',"label":"0"}},
-        {'data': {'id': '大学の在り方',"label":"1"}},
-        {'data': {'id': '繰り返し言及している',"label":"1"}},
-        {'data': {'id': '分野の壁がないこと→教養教育において大事な環境',"label":"0"}}
-    ],
-    "edge":[
-    {"data":{'source': '大学の運営に少なからず不自由な面がある', 'target': '大学の在り方'}},
-    {"data":{'source': '大学の運営に少なからず不自由な面がある', 'target': '分野の壁がないこと→教養教育において大事な環境'}},
-    {"data":{'source': '大学の運営に少なからず不自由な面がある', 'target': '若者に対する考え，少しは厳しい状況に身を置くべき'}},
-    {"data":{'source': '永田学長が思う大学の役割', 'target': '筑波大学キーワード'}},
-    {"data":{'source': '永田学長が思う大学の役割', 'target': '永田学長の学長ぞうを象徴する言葉'}},
-    {"data":{'source': '永田学長が思う大学の役割', 'target': '大学の在り方'}},
-    {"data":{'source': '個性が強い\u3000≒\u3000就職してからの夢を持てるかどうか', 'target': '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）'}},
-    {"data":{'source': '個性が強い\u3000≒\u3000就職してからの夢を持てるかどうか', 'target': '若者に対する考え，少しは厳しい状況に身を置くべき'}},
-    {"data":{'source': '個性が強い\u3000≒\u3000就職してからの夢を持てるかどうか', 'target': '永田学長が思う大学の役割'}},
-    {"data":{'source': '日本人学生に対して', 'target': '筑波大学キーワード'}},
-    {"data":{'source': '日本人学生に対して', 'target': '教員に対する思い'}},
-    {"data":{'source': '日本人学生に対して', 'target': '永田学長が思う大学の役割'}},
-    {"data":{'source': '若者に対する考え，少しは厳しい状況に身を置くべき', 'target': '大学の運営に少なからず不自由な面がある'}},
-    {"data":{'source': '若者に対する考え，少しは厳しい状況に身を置くべき', 'target': '分野の壁がないこと→教養教育において大事な環境'}},
-    {"data":{'source': '若者に対する考え，少しは厳しい状況に身を置くべき', 'target': '教員に対する思い'}},
-    {"data":{'source': '筑波大学キーワード', 'target': '永田学長が思う大学の役割'}},
-    {"data":{'source': '筑波大学キーワード', 'target': '永田学長の学長ぞうを象徴する言葉'}},
-    {"data":{'source': '筑波大学キーワード', 'target': '日本人学生に対して'}},
-    {"data":{'source': '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）', 'target': '個性が強い\u3000≒\u3000就職してからの夢を持てるかどうか'}},
-    {"data":{'source': '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）', 'target': '教員に対する思い'}},
-    {"data":{'source': '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）', 'target': '繰り返し言及している'}},
-    {"data":{'source': 'ある部分において， 企業の上層部と大学の役員を同じような位置付けに置いている', 'target': '大学の在り方'}},
-    {"data":{'source': 'ある部分において， 企業の上層部と大学の役員を同じような位置付けに置いている', 'target': '大学の運営に少なからず不自由な面がある'}},
-    {"data":{'source': 'ある部分において， 企業の上層部と大学の役員を同じような位置付けに置いている', 'target': '永田学長が思う大学の役割'}},
-    {"data":{'source': '永田学長の学長ぞうを象徴する言葉', 'target': '筑波大学キーワード'}},
-    {"data":{'source': '永田学長の学長ぞうを象徴する言葉', 'target': '永田学長が思う大学の役割'}},
-    {"data":{'source': '永田学長の学長ぞうを象徴する言葉', 'target': '日本人学生に対して'}},
-    {"data":{'source': '教員に対する思い', 'target': '日本人学生に対して'}},
-    {"data":{'source': '教員に対する思い', 'target': '若者に対する考え，少しは厳しい状況に身を置くべき'}},
-    {"data":{'source': '教員に対する思い', 'target': '分野の壁がないこと→教養教育において大事な環境'}},
-    {"data":{'source': '大学の在り方', 'target': '永田学長が思う大学の役割'}},
-    {"data":{'source': '大学の在り方', 'target': '大学の運営に少なからず不自由な面がある'}},
-    {"data":{'source': '大学の在り方', 'target': '筑波大学キーワード'}},
-    {"data":{'source': '繰り返し言及している', 'target': '永田学長の学長ぞうを象徴する言葉'}},
-    {"data":{'source': '繰り返し言及している', 'target': '筑波大学キーワード'}},
-    {"data":{'source': '繰り返し言及している', 'target': '話しの中で見つけた一つの考え？（もともと持っていたのかは不明）'}},
-    {"data":{'source': '分野の壁がないこと→教養教育において大事な環境', 'target': '大学の運営に少なからず不自由な面がある'}},
-    {"data":{'source': '分野の壁がないこと→教養教育において大事な環境', 'target': '若者に対する考え，少しは厳しい状況に身を置くべき'}},
-    {"data":{'source': '分野の壁がないこと→教養教育において大事な環境', 'target': '教員に対する思い'}},
-    ]
-}
-# graph = {
-#     "node":[
-#         {"data":{"id":"テスト1"}},
-#         {"data":{"id":"テスト2"}}
-#     ],
-#     "edge":[
-#         {"data":{'source': 'テスト1', 'target': 'テスト2'}},
-#     ]
-# }
-recommends = [
-    ["0","テキスト","街"],
-]
-
-
+def make_sent(texts):
+    sent_texts = []
+    sent2index = defaultdict(list)
+    exception_sent_index = []
+    for i in range(len(texts)):
+        sentence = [ x for x in re.split("[。．:;)]",texts[i]) if x != ""]
+        sent_texts += sentence
+        for j in sentence:
+            sent2index[j] = i
+    for i in range(len(sent_texts)):
+        if len(sent_texts[i]) <= 8 or sent_texts[i] == "==================================================":
+            exception_sent_index.append(i)
+    return sent_texts,sent2index,exception_sent_index
 
 def make_tag2sent(tags,user_hiright):
     for i in range(len(user_hiright)):
@@ -211,50 +111,106 @@ def make_tag2sent(tags,user_hiright):
                 tags[user_hiright[i]["tag"]].append(user_hiright[i]["text"])
 
 
+def read_word(file_path):
+    document = Document(file_path)
+    texts = []
+    for i in document.paragraphs:
+        print(i.paragraph_format)
+        print(i.style)
+        if i.text != []:
+            texts.append(i.text)
+    return texts
+######
+
+
+#Flaskオブジェクトの生成
+app = Flask(__name__)
+
+#オブジェクトの初期化
+questionnaire_data = QuestionnaireData()
+analyst_data = AnalystData()
+user_hiright = []
+tags={}
+# graph_obj = sent_bert.SentBert()
+rec_texts = []
+rec_sent2index = {}
+log_file_path = ""
+recommends = [
+]
+remove_recommends = [
+
+]
+
+
+
 
 @app.route("/",methods=["GET","POST"])
 def index():   
-    global questionnaire_data,analyst_data,system,user_hiright,graph
+    global questionnaire_data,analyst_data,user_hiright,rec_texts,rec_sent2index,recommend_system,recommends,log_file_path,remove_recommends
 
     if request.method == "POST":
         #postされたファイルオブジェクト取得
-        f = request.files["file"]
+        files = request.files.getlist("file")
+        file_name = ""
+        all_text = []
+        for f in files:
+            file_name += f.filename + "/"
+            file_path = my_path + "files/" + f.filename
+            f.save(file_path)
+            if os.path.isfile(file_path):
+                if re.search("doc",f.filename):
+                    all_text = read_word(file_path)
+                else:
+                    with open(file_path,"r") as f:
+                        all_text += f.readlines()
+                all_text.append("==================================================")
+        #ログファイルの設定
+        log_file_path = my_path + "log/log.txt"
+        # 時刻，eventtype(自分，タグ削除，推薦○,推薦×，ジャンプ) 何行目の何文字目,テキスト 
+        with open(log_file_path,"w") as f:
+            f.write("time,event_type,text\n")
         #ファイル情報の処理
-        questionnaire_data.file_name = secure_filename(f.filename)
+        questionnaire_data.file_name = file_name
         if questionnaire_data.file_name != "":
-            questionnaire_data.file_path = my_path + "files/" + questionnaire_data.file_name
-            questionnaire_data.file_save(f)
+            # questionnaire_data.file_path = my_path + "files/" + questionnaire_data.file_name
+            # questionnaire_data.file_save(f)
             #ファイルを開き，センテンス情報の取得
-            if os.path.isfile(questionnaire_data.file_path):
-                with open(questionnaire_data.file_path,"r") as f:
-                    questionnaire_data.texts = f.readlines()
-                questionnaire_data.make_html_data()
-                # return render_template(
-                #     'result.html',
-                #     file_name=questionnaire_data.file_name,
-                #     lines=questionnaire_data.html_data,
-                #     result=analyst_data.chat_data,
-                #     graph=graph,
-                #     hiright=user_hiright,
-                #     recommends = recommends)  
-                return redirect(url_for("result"))
+            # with open(questionnaire_data.file_path,"r") as f:
+            #     questionnaire_data.texts = f.readlines()
+            questionnaire_data.texts = all_text
+            questionnaire_data.make_html_data()
+            rec_texts,rec_sent2index,exception_sent_index = make_sent(questionnaire_data.texts)
+            recommend_system = recommend.Recommend(rec_texts,exception_sent_index)
+            # recommend_system = recommend.Recommend(rec_texts)
+            # return render_template(
+            #     'result.html',
+            #     file_name=questionnaire_data.file_name,
+            #     lines=questionnaire_data.html_data,
+            #     result=analyst_data.chat_data,
+            #     graph=graph,
+            #     hiright=user_hiright,
+            #     recommends = recommends)  
+            return redirect(url_for("result"))
         else:
             return render_template('index.html')
     else:
         #（仮）/ページがGETされた時，すなわちトップページに戻ってきたらデータ初期化するように設定しておく
-        system = System()
         questionnaire_data = QuestionnaireData()
         analyst_data = AnalystData()
         user_hiright = []
-        node2index = {}
+        tags = {}
+        rec_texts = []
+        rec_sent2index = {}
         #フォルダの初期化
-        make_dir(my_path) 
-        
+        make_dir(my_path,"files") 
+        make_dir(my_path,"log") 
+        recommends = []
+        remove_recommends=[]
         return render_template("index.html")
 
 @app.route("/result",methods=["GET","POST"])
 def result():
-    global user_hiright,graph
+    global user_hiright,recommend_system
     if request.method == "POST":
         tmp_reason = request.form.get("reason")
         #分析者が選択した文章と理由の取得＆処理
@@ -280,25 +236,19 @@ def result():
             tags = tags
         )
     else:
+        print("threshold")
+        print(recommend_system.Xs_threshold)
         if user_hiright != [] and user_hiright[-1]["tag"] != "":
             make_tag2sent(tags,user_hiright)
-            print(tags)
         if questionnaire_data.html_data==None:
             lines = [{"index":999,"sentence":"データがありません"}]
         else:
             lines = questionnaire_data.html_data
-        # import random
-        # recommends = [
-        #     [["d","d","d"],["d","d","d"]],
-        #     [["e","e","e"],["e","e","e"]]
-        # ]
-        # recommends = random.sample(recommends,1)
         return render_template(
             "result.html",
             file_name=questionnaire_data.file_name,
             lines=lines,
             result=analyst_data.chat_data,
-            graph=graph,
             hiright = user_hiright,
             recommends = recommends,
             tags = tags
@@ -313,52 +263,45 @@ def history():
 @app.route("/hiright",methods=["POST"])
 def hiright():
     global user_hiright
-    tmp_dic = {
-        "id":request.form["a"],
-        "startOffset":request.form["b"],
-        "endOffset":request.form["c"],
-        "text":request.form["d"],
-        "tag":"",
-    }
+    if request.form["d"] == "recommend_apply":
+        tmp_dic = {
+            "id":request.form["a"],
+            "startOffset":request.form["b"],
+            "endOffset":request.form["c"],
+            "text":rec_texts[request.form["a"]],
+            "tag":"",
+        }
+    else:
+        tmp_dic = {
+            "id":request.form["a"],
+            "startOffset":request.form["b"],
+            "endOffset":request.form["c"],
+            "text":request.form["d"],
+            "tag":"",
+        }
     if tmp_dic not in user_hiright:
         user_hiright.append(tmp_dic)
     print(user_hiright)
     return redirect(url_for("result"))
 
-@app.route("/memo",methods=["POST"])
-def memo():
-    global user_hiright
-    memo = request.form["memo"]
-    row = request.form["tmp_range"]
-    #メモを保存
-    user_hiright[-1]["memo"] = memo
-    #チャットデータにmemoを保存
-    analyst_data.chat_data.append(["analyst_phrase",row + "　" + memo])
-    #類似度の計算
-
-    # node2index[memo] = user_hiright[-1]["id"]
-    print(node2index)
-    return redirect(url_for("result"))
-
-@app.route("/node_tag",methods=["POST"])
-def node_tag():
-    tmp_node = request.form["node"]
-    tag = re.sub("^\$TAG\$","",request.form["tag"])
-    if re.search(r"\d+",tmp_node):
-        node = tmp_node
-        analyst_data.chat_data.append(["analyst_phrase",tmp_node + "　" + request.form["tag"]])
-    else:
-        node = node2index[tmp_node]
-    if node != "" and tag != "":
-        questionnaire_data.add_tag(node,tag)
-    return redirect(url_for("result"))
-
 @app.route("/input_tag",methods=["POST"])
 def input_tag():
+    global recommend_system
     tmp_tag = request.form["input_tag"]
     if  user_hiright[-1]["tag"] == "":
         user_hiright[-1]["tag"] = tmp_tag
-    print(user_hiright)
+    # 推薦アルゴリズム~recommendへappendまで
+    x = recommend_system.predict([user_hiright[-1]["text"]],user_hiright[-1]["tag"])
+    print(x)
+    if x:
+        recommend_text = rec_texts[x]
+        ids = rec_sent2index[recommend_text]-1
+        tag = user_hiright[-1]["tag"]
+        print([ids,recommend_text[:10],tag])
+        print(recommend_system.Xs_threshold)
+        length = len(recommend_text) if len(recommend_text) <=20 else 20
+        if recommend_text[:length] not in remove_recommends:
+            recommends.append([ids,recommend_text[:length],tag])
     return redirect(url_for("result"))
 
 @app.route("/remove_tag",methods=["POST"])
@@ -373,10 +316,39 @@ def remove_tag():
 
 @app.route("/remove_recommend",methods=["POST"])
 def remove_recommend():
+    global recommend_system,remove_recommends
     tmp_text = request.form["remove_recommend"]
     for i in range(len(recommends)):
         if recommends[i][1] == tmp_text:
             recommends.pop(i)
             break
-    print(recommends)
+    remove_recommends.append(tmp_text)
     return redirect(url_for("result"))
+
+
+#テキストデータで用意してもらう　複数のインタビュデータの場合，戻る→最後のタグ付与の場所へ．タグ一覧からのジャンプ, wordファイルが入力されます
+#split コロン等含める　5文字以下は推薦の対象から外す，半角スペース，空行に罫線など　
+#実験では時間とかタグの数とかではなく，感想．
+#照山研と若林研でのログ，
+# 時刻，eventtype(自分，タグ削除，推薦○,推薦×，ジャンプ) 何行目の何文字目,テキスト
+
+@app.route("/rec_level",methods=["POST"])
+def rec_level():
+    tmp_rec_level = request.form["rec_level"]
+    if tmp_rec_level == "0":
+        recommend_system.Xs_threshold = recommend_system.threshold_high
+    elif tmp_rec_level == "1":
+        recommend_system.Xs_threshold = recommend_system.threshold_middle
+    else:
+        recommend_system.Xs_threshold = recommend_system.threshold_low
+    return redirect(url_for("result"))
+
+def make_log():
+    pass
+
+
+def output_log(eventtype=None,text=None,start_index=None,end_index=None):
+    time = datetime.datetime.now()
+    string = "{'time':'{}','eventtype':'{}','text':'{}','start_index':'{}','end_index':,'{}'\n".format(time,eventtype,text,start_index,end_index)
+    with open(log_file_path,"a") as f:
+        f.write(string)

@@ -374,7 +374,7 @@
 }
 
 .suggest_main {
-  height: 10vh;
+  height: auto;
   margin-top: 5vh;
 }
 
@@ -414,6 +414,19 @@
   position: absolute;
   top: 10%;
   right: 5%;
+  font-size: 1.2rem;
+}
+.rec_level{
+  position: absolute;
+  top: 40%;
+  right: 5%;
+  font-size: 1.2rem;
+}
+
+.page_top{
+  position: absolute;
+  top: 10%;
+  left:3%;
   font-size: 1.2rem;
 }
 

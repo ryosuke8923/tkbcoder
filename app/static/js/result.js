@@ -88,6 +88,7 @@ function apply_recommend(e){
 	let regexp_id = /(?<=apply_).+/;
 	// id取得
 	let id = regexp_id.exec(e.id)[0];
+	console.log("敵意要する")
 	if(e.className == "apply"){
 		// 1→文章に関するもの 2→タグに関するもの
 		let string1 = "recommend_sentence_"+id;
@@ -96,18 +97,21 @@ function apply_recommend(e){
 		let sentence2 = document.getElementById(string2).textContent;
 		console.log("適用する");
 		console.log(sentence1,sentence2);
-
+		id = String(Number(id)+1);
+		console.log(id);
 		const a= id;
 		const b = 0;
 		const c= 0;
-		const d = sentence1.trim();
+		const d = sentence1.trim()
 		const e = sentence2.trim();
 
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", '/hiright', true);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		console.log(a,b,c,d)
 		xhr.send("a="+a+"&b="+b+"&c="+c+"&d="+d);
 
+		console.log(8888)
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", '/input_tag', true);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -116,8 +120,9 @@ function apply_recommend(e){
 		let unique_id = window.localStorage.getItem("id");
 		localStorage.setItem("id", Number(unique_id)+1);
 
-		location.reload();
+		// location.reload();
 	}
+	id = String(Number(id)-1);
 	let string1 = "recommend_sentence_"+id;
 	let sentence1 = document.getElementById(string1).textContent;
 	const d = sentence1.trim();
@@ -159,6 +164,33 @@ function hidden_all_tag(e){
 	let tag_modal = document.getElementById("tag_modal");
 	tag_modal.style.display = "none";
 }
+
+function check_rec_level(e){
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", '/rec_level', true);
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	if(e.textContent == "推薦頻度：低"){
+		e.textContent = "推薦頻度：普"
+		xhr.send("rec_level="+"1");
+		localStorage.setItem("rec_level", 1);
+	}else if (e.textContent == "推薦頻度：普"){
+		e.textContent = "推薦頻度：高"
+		xhr.send("rec_level="+"2");
+		localStorage.setItem("rec_level", 2);
+	}else{
+		e.textContent = "推薦頻度：低"
+		xhr.send("rec_level="+"0");
+		localStorage.setItem("rec_level", 0);
+	}
+}
+
+function page_top(e){
+	let page_anchor = Number(window.localStorage.getItem("page_anchor"));
+	if (page_anchor != null){
+		localStorage.removeItem("page_anchor");
+	}
+	location.reload();
+}
 // =================変数の初期化========================
 let tmp_range = "";
 let tmp_node = "";
@@ -169,6 +201,20 @@ let tmp_node = "";
 // Loading Action
 // ================タグ付与部分の再現====================
 window.onload = function() {
+	let page_anchor = Number(window.localStorage.getItem("page_anchor"));
+	let rec_level = Number(window.localStorage.getItem("rec_level"));
+	window.location.hash = "";
+	if (page_anchor > 2){
+		window.location.hash = page_anchor-2;
+	}
+	let rec_level_btn = document.getElementById("rec_level");
+	if (rec_level == 0){
+		rec_level_btn.textContent = "推薦頻度：低";
+	}else if(rec_level == 1){
+		rec_level_btn.textContent = "推薦頻度：普";
+	}else{
+		rec_level_btn.textContent = "推薦頻度：高";
+	}
 	
 	for(let i = 0; i < hiright.length; i++){
 		const a = hiright[i].id
@@ -217,14 +263,17 @@ window.onload = function() {
 // ===================キーイベント======================
 window.document.onkeydown = function(event){
 	// shift+enterでタグ送信
-	if (event.shiftKey && event.key === 'Enter') {
+	if (event.shiftKey && event.keyCode === 88){
+		location.reload();
+	}
+	if (event.shiftKey && event.keyCode === 90) {
 		if(document.getElementById("input_tag_text").value != "");{
 			document.getElementById("input_tag_button").click();
 		}
 		return false;
 	}
 	// 範囲選択＋enterでタグを付与する文章の選択&タグ入力フォーム出現
-	if (event.key === 'Enter') {
+	if (event.shiftKey && event.key === 'Enter') {
         let unique_id = window.localStorage.getItem("id");
 		if (unique_id === null){
 			unique_id = 0;
@@ -271,6 +320,8 @@ window.document.onkeydown = function(event){
 		xhr.open("POST", '/hiright', true);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		xhr.send("a="+a+"&b="+b+"&c="+c+"&d="+d);
+
+		localStorage.setItem("page_anchor", a);
 		//タグ入力フォーム出現
 		$('.js-modal').fadeIn();
 		let input_tag = document.getElementById("input_tag_text");
