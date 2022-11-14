@@ -57,6 +57,7 @@
 
 
     <!----tagの推薦----->
+    
     <div class="suggest" id="suggest">
         <div class="suggest_title"><p>こちらの文章はいかがですか？</p></div>
         {%for rec in recommends %}
@@ -94,6 +95,43 @@
         </div>
         <button onclick="check_rec_level(this)" id="rec_level"class="rec_level"><span>推薦頻度：低</span></button>
         <button onclick="page_top(this)" id="page_top" class="page_top"><span>TOP</span></button>
+        <button onclick="show_howtouse(this)" id="show_howtouse" class="show_howtouse"><span>使い方</span></button>
+        <div id="howtouse_modal" class="howtouse_modal">
+            <div class="howtouse_modal-content">
+                <div class="howtouse_modal-header">
+                  <h1>TKBcoder の使い方</h1>
+                  <button onclick="hidden_howtouse(this)"class="howtouse_modalClose">×</button>
+                </div>
+                <div class="howtouse_modal-body">
+                    <h2 class="howtouse_h2">タグの入力</h2>
+                    <ol type="1">
+                        <li>タグを付与したいテキストの範囲をドラッグしてください</li><br>
+                        <li>範囲が決定した後, <span class="shift_enter">Shift+Enterキー</span>を押してください．タグ入力画面が表示されます．</li><br>
+                        <li>検索ボックスにタグを入力し，<span class="shift_enter">送信ボタンをクリック</span> or <span class="shift_enter">Shift+z</span> を押してください．タグが送信されます．</li>
+                    </ol><br>
+                    <h2 class="howtouse_h2">タグの取り消し</h2>
+                    <ol>
+                        <p>タグを送信した範囲が緑色のボタンになっています．取り消したいタグのボタンをダブルクリックしてください．</p>
+                    </ol><br>
+                    <h2 class="howtouse_h2">システムからの推薦</h2>
+                    <ol>
+                        <h3>分析者が送信したタグと同じタグが付与される可能性のある文章が，画面右にシステムから推薦されます．</h3>
+                        <li>その推薦された文章に同様のタグを付与して良ければ，<span class="shift_enter">適用する</span>ボタンをクリックしてください．</li><br>
+                        <li>その推薦を断る場合には<span class="shift_enter">適用しない</span>ボタンをクリックしてください．</li>
+                    </ol><br>
+                    <h2 class="howtouse_h2">推薦頻度の変更</h2>
+                    <ol>
+                        <h3>分析対象テキストによっては，システムからの推薦頻度が極端に多いor少ない場合も想定されます．</h3>
+                        <li>そのため，分析者は自分で大まかな推薦頻度を調整することが可能です</li><br>
+                        <li>画面上部にあるボタンを押すことで，<span class="shift_enter">「推薦頻度：少」</span><span class="shift_enter">「推薦頻度：普」</span><span class="shift_enter">「推薦頻度：高」</span>を選択できます．</li>
+                    </ol><br>
+                    <h2 class="howtouse_h2">登録タグの確認</h2>
+                    <ol>
+                        <p>分析者が登録したタグは画面上部の<span class="shift_enter">「タグ一覧」</span>より確認できます．</p>
+                    </ol><br>
+                </div>
+              </div>
+        </div>
     </div>
 
     <header>
@@ -120,7 +158,7 @@
                 <div class="modal__content">
                     <div class="modal_content_p">
                         <p class="p1">タグを入力してください</p>
-                        <p class="p2">＊ Shift+Enterで送信できます</p>
+                        <p class="p2">＊ Shift+z で送信できます</p>
                     </div>
                     <input type="text"  class="input_tag_text" id="input_tag_text"  />
                     <input type="button" class="input_tag_button" id="input_tag_button" onclick="input_tag()" value="送信">

@@ -15,9 +15,16 @@ from docx import Document
 # from . import code
 ######
 
-my_path = '/Users/saitouryousuke/prog/python/tkbcoder/app/'
+my_path = os.path.expanduser('~') + "/tkbcoder/app/" if os.path.expanduser('~') != "/Users/saitouryousuke" else os.path.expanduser('~') + "/prog/python/tkbcoder/app/"
+print(my_path)
 
 
+my_files_path = my_path + "files/"
+my_log_path = my_path + "log/"
+if not os.path.isdir(my_files_path):
+    os.mkdir(my_files_path)
+if not os.path.isdir(my_log_path):
+    os.mkdir(my_log_path)
         
 #分析者用クラス
 class AnalystData:

@@ -165,6 +165,16 @@ function hidden_all_tag(e){
 	tag_modal.style.display = "none";
 }
 
+function show_howtouse(e){
+	let tag_modal = document.getElementById("howtouse_modal");
+	tag_modal.style.display = "block";
+	
+}
+function hidden_howtouse(e){
+	let tag_modal = document.getElementById("howtouse_modal");
+	tag_modal.style.display = "none";
+}
+
 function check_rec_level(e){
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", '/rec_level', true);
