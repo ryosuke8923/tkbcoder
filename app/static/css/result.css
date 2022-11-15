@@ -374,6 +374,7 @@
 }
 
 .suggest_main {
+  word-wrap: break-word;
   height: auto;
   margin-top: 5vh;
 }

@@ -88,7 +88,7 @@ function apply_recommend(e){
 	let regexp_id = /(?<=apply_).+/;
 	// id取得
 	let id = regexp_id.exec(e.id)[0];
-	console.log("敵意要する")
+	
 	if(e.className == "apply"){
 		// 1→文章に関するもの 2→タグに関するもの
 		let string1 = "recommend_sentence_"+id;
@@ -102,7 +102,7 @@ function apply_recommend(e){
 		const a= id;
 		const b = 0;
 		const c= 0;
-		const d = sentence1.trim()
+		const d = sentence1.trim();
 		const e = sentence2.trim();
 
 		var xhr = new XMLHttpRequest();
@@ -119,10 +119,11 @@ function apply_recommend(e){
 
 		let unique_id = window.localStorage.getItem("id");
 		localStorage.setItem("id", Number(unique_id)+1);
-
+		localStorage.setItem("page_anchor", a);
 		// location.reload();
+		id = String(Number(id)-1);
 	}
-	id = String(Number(id)-1);
+
 	let string1 = "recommend_sentence_"+id;
 	let sentence1 = document.getElementById(string1).textContent;
 	const d = sentence1.trim();
@@ -133,11 +134,12 @@ function apply_recommend(e){
 	xhr.send("remove_recommend="+d);
 	
 	// フロント上の削除
-	let string = "#suggest_data_"+id
-	console.log(string);
-	$(string).remove();
+	// let string = "#suggest_data_"+id
+	// console.log(string);
+	// $(string).remove();
 
 	//flaskでの削除
+	location.reload();
 }
 // =====推薦候補に対して分析者のアクションがあった場合========
 
@@ -154,6 +156,20 @@ function remove_tag(e){
 
 // ==================関数群============================
 
+function hello(e){
+	console.log("1")
+	console.log(e)
+	let regexp_id = /(?<=recommend_id_).+/;
+	// id取得
+	let id = regexp_id.exec(e.id)[0];
+	let string1 = "recommend_sentence_"+id;
+	let sentence1 = document.getElementById(string1).textContent;
+	sentence1 = sentence1.replace(/^\s/,"")
+	let change = "<div style='color:#ff0000'>"+sentence1+"</div>"
+	let tmp_node = document.getElementById(Number(id)+1);
+	reg = new RegExp(sentence1);
+	tmp_node.innerHTML = tmp_node.innerHTML.replace(reg,change)
+}
 function all_tag(e){
 	let tag_modal = document.getElementById("tag_modal");
 	tag_modal.style.display = "block";
@@ -240,32 +256,51 @@ window.onload = function() {
 		// console.log(i,foo);
 
 		var ra = new Range();
-		if(foo.childNodes.length == 1){
-			let start_index = foo.firstChild.data.match(reg).index;
-			let end_index = start_index + d.length;
-			// 新たにRangeオブジェクトを作成→スタート・エンドを決定.
-			var ra = new Range();
-			console.log(i,foo.firstChild.data);
-			ra.setStart(foo.firstChild,start_index);
-			ra.setEnd(foo.firstChild,end_index);
-			
-		}else{
-			
-			let start_index = foo.lastChild.data.match(reg).index;
-			let end_index = start_index + d.length;
-			ra.setStart(foo.lastChild,start_index);
-			ra.setEnd(foo.lastChild,end_index);
 
-		}
-
-		var span = document.createElement("button");
-		span.setAttribute('ondblclick', 'remove_tag(this)');
-		span.style.color = "black";
+		// let id = regexp_id.exec(e.id)[0];
+		// let string1 = "recommend_sentence_"+id;
+		// let sentence1 = document.getElementById(string1).textContent;
+		// sentence1 = sentence1.replace(/^\s/,"")
 		hiright_id = "hiright_" + String(i);
-		span.setAttribute("class",hiright_id);
-		ra.surroundContents(span);
-		console.log(span);
+		let change = `<button ondblclick='remove_tag(this)' class='${hiright_id}' style='color: black;'>` +d+`</button>`
+		let tmp_node = document.getElementById(Number(a));
+		console.log(tmp_node)
+		reg = new RegExp(d);
+		tmp_node.innerHTML = tmp_node.innerHTML.replace(reg,change)
 		show_tag(hiright_id,e);
+
+
+		// try{
+		// 	if(foo.childNodes.length == 1){
+		// 		let start_index = foo.firstChild.data.match(reg).index;
+		// 		let end_index = start_index + d.length;
+		// 		// 新たにRangeオブジェクトを作成→スタート・エンドを決定.
+		// 		var ra = new Range();
+		// 		console.log(i,foo.firstChild.data);
+		// 		ra.setStart(foo.firstChild,start_index);
+		// 		ra.setEnd(foo.firstChild,end_index);
+				
+		// 	}else{
+				
+		// 		let start_index = foo.lastChild.data.match(reg).index;
+		// 		let end_index = start_index + d.length;
+		// 		ra.setStart(foo.lastChild,start_index);
+		// 		ra.setEnd(foo.lastChild,end_index);
+		// 	}
+		// 	var span = document.createElement("button");
+		// 	span.setAttribute('ondblclick', 'remove_tag(this)');
+		// 	span.style.color = "black";
+		// 	hiright_id = "hiright_" + String(i);
+		// 	span.setAttribute("class",hiright_id);
+		// 	ra.surroundContents(span);
+		// 	console.log(span);
+		// 	show_tag(hiright_id,e);
+		// }catch(e){
+		// 	console.log(e,i)
+		// }
+		
+
+		
 	}
 }
 // ================タグ付与部分の再現====================
@@ -276,7 +311,7 @@ window.document.onkeydown = function(event){
 	if (event.shiftKey && event.keyCode === 88){
 		location.reload();
 	}
-	if (event.shiftKey && event.keyCode === 90) {
+	if (event.shiftKey && event.keyCode === 90 && document.getElementById("input_tag_text").value != "") {
 		if(document.getElementById("input_tag_text").value != "");{
 			document.getElementById("input_tag_button").click();
 		}

@@ -63,7 +63,7 @@
         {%for rec in recommends %}
             <div class="suggest_data" id="suggest_data_{{rec[0]|safe}}">    
                 <div class="suggest_id ">
-                        <a href="#{{rec[0]|safe}}"id="recommend_id_{{rec[0]|safe}}">{{rec[0]}}</a>
+                        <a href="#{{rec[0]|safe}}" onclick="hello(this)" id="recommend_id_{{rec[0]|safe}}">{{rec[0]}}</a>
                         <input type="button" class="apply" id="apply_{{rec[0]|safe}}" onclick="apply_recommend(this)" value="適用する" >  
                         <input type="button" class="not_apply" id="apply_{{rec[0]|safe}}" onclick="apply_recommend(this)" value="適用しない" >
                 </div>

@@ -114,8 +114,9 @@ def make_tag2sent(tags,user_hiright):
         if user_hiright[i]["tag"] not in tags and user_hiright[i]["tag"] != "":
             tags[user_hiright[i]["tag"]] = [user_hiright[i]["text"]]
         else:
-            if user_hiright[i]["text"] not in tags[user_hiright[i]["tag"]]:
-                tags[user_hiright[i]["tag"]].append(user_hiright[i]["text"])
+            if user_hiright[i]["tag"] in tags:
+                if user_hiright[i]["text"] not in tags[user_hiright[i]["tag"]]:
+                    tags[user_hiright[i]["tag"]].append(user_hiright[i]["text"])
 
 
 def read_word(file_path):
@@ -175,7 +176,7 @@ def index():
         log_file_path = my_path + "log/log.txt"
         # 時刻，eventtype(自分，タグ削除，推薦○,推薦×，ジャンプ) 何行目の何文字目,テキスト 
         with open(log_file_path,"w") as f:
-            f.write("time,event_type,text\n")
+            f.write("time,eventtype,text,tag,start_index,end_index\n")
         #ファイル情報の処理
         questionnaire_data.file_name = file_name
         if questionnaire_data.file_name != "":
@@ -243,7 +244,8 @@ def result():
             tags = tags
         )
     else:
-        print("threshold")
+        print("user_hiright")
+        print(user_hiright)
         print(recommend_system.Xs_threshold)
         if user_hiright != [] and user_hiright[-1]["tag"] != "":
             make_tag2sent(tags,user_hiright)
@@ -275,9 +277,10 @@ def hiright():
             "id":request.form["a"],
             "startOffset":request.form["b"],
             "endOffset":request.form["c"],
-            "text":rec_texts[request.form["a"]],
+            "text":request.form["d"],
             "tag":"",
         }
+        output_log(eventtype="hiright_by_system",text=tmp_dic["text"])
     else:
         tmp_dic = {
             "id":request.form["a"],
@@ -286,29 +289,37 @@ def hiright():
             "text":request.form["d"],
             "tag":"",
         }
+        output_log(eventtype="hiright_by_analyst",text=tmp_dic["text"])
     if tmp_dic not in user_hiright:
         user_hiright.append(tmp_dic)
-    print(user_hiright)
     return redirect(url_for("result"))
 
 @app.route("/input_tag",methods=["POST"])
 def input_tag():
     global recommend_system
     tmp_tag = request.form["input_tag"]
-    if  user_hiright[-1]["tag"] == "":
-        user_hiright[-1]["tag"] = tmp_tag
-    # 推薦アルゴリズム~recommendへappendまで
-    x = recommend_system.predict([user_hiright[-1]["text"]],user_hiright[-1]["tag"])
-    print(x)
-    if x:
-        recommend_text = rec_texts[x]
-        ids = rec_sent2index[recommend_text]-1
-        tag = user_hiright[-1]["tag"]
-        print([ids,recommend_text[:10],tag])
-        print(recommend_system.Xs_threshold)
-        length = len(recommend_text) if len(recommend_text) <=20 else 20
-        if recommend_text[:length] not in remove_recommends:
-            recommends.append([ids,recommend_text[:length],tag])
+    if tmp_tag == "":
+        for i in range(len(user_hiright)):
+            if user_hiright[i]["tag"] == "":
+                user_hiright.pop(i)
+    else:
+        if  len(user_hiright) != 0 and user_hiright[-1]["tag"] == "":
+            user_hiright[-1]["tag"] = tmp_tag
+            output_log(eventtype="tag",text=user_hiright[-1]["text"],tag=tmp_tag)
+        # 推薦アルゴリズム~recommendへappendまで
+        x = recommend_system.predict([user_hiright[-1]["text"]],user_hiright[-1]["tag"])
+        print(x)
+        if x:
+            recommend_text = rec_texts[x]
+            ids = rec_sent2index[recommend_text]-1
+            tag = user_hiright[-1]["tag"] if user_hiright[-1]["tag"] != "" else "-"
+            print([ids,recommend_text[:10],tag])
+            print(recommend_system.Xs_threshold)
+            # length = len(recommend_text) if len(recommend_text) <=20 else 20
+            # if recommend_text[:length] not in remove_recommends:
+            #     recommends.append([ids,recommend_text[:length],tag])
+            if recommend_text not in remove_recommends:
+                recommends.append([ids,recommend_text,tag])
     return redirect(url_for("result"))
 
 @app.route("/remove_tag",methods=["POST"])
@@ -316,6 +327,7 @@ def remove_tag():
     tmp_text = request.form["remove_tag"]
     for i in range(len(user_hiright)):
         if user_hiright[i]["text"] == tmp_text:
+            output_log(eventtype="remove_tag",text=user_hiright[i]["text"],tag=user_hiright[i]["tag"])
             user_hiright.pop(i)
             break
     print(user_hiright)
@@ -354,8 +366,9 @@ def make_log():
     pass
 
 
-def output_log(eventtype=None,text=None,start_index=None,end_index=None):
+def output_log(eventtype="-",text="-",tag="-",start_index="-",end_index="-"):
     time = datetime.datetime.now()
-    string = "{'time':'{}','eventtype':'{}','text':'{}','start_index':'{}','end_index':,'{}'\n".format(time,eventtype,text,start_index,end_index)
+    time = time.strftime('%Y-%m-%d %H:%M:%S')
+    string = "{},{},{},{},{},{}\n".format(time,eventtype,text,tag,start_index,end_index)
     with open(log_file_path,"a") as f:
         f.write(string)
