@@ -167,7 +167,7 @@ def index():
             f.save(file_path)
             if os.path.isfile(file_path):
                 if re.search("doc",f.filename):
-                    all_text = read_word(file_path)
+                    all_text += read_word(file_path)
                 else:
                     with open(file_path,"r") as f:
                         all_text += f.readlines()
@@ -324,12 +324,23 @@ def input_tag():
 
 @app.route("/remove_tag",methods=["POST"])
 def remove_tag():
+    global tags
     tmp_text = request.form["remove_tag"]
+    remove_tag = ""
+    remove_text = ""
     for i in range(len(user_hiright)):
         if user_hiright[i]["text"] == tmp_text:
+            remove_tag = user_hiright[i]["tag"]
+            remove_text = user_hiright[i]["text"]
             output_log(eventtype="remove_tag",text=user_hiright[i]["text"],tag=user_hiright[i]["tag"])
             user_hiright.pop(i)
             break
+    if remove_tag in tags:
+        if remove_text in tags[remove_tag]:
+            if len(tags[remove_tag]) == 1:
+                tags.pop(remove_tag)
+            else:
+                tags[remove_tag].remove(remove_text)
     print(user_hiright)
     return redirect(url_for("result"))
 
