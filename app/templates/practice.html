@@ -11,54 +11,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.2.7/cytoscape.min.js"></script>
     <script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
     <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.5.0/cytoscape-dagre.js"></script>
-    <script type="text/javascript">
-        var hiright = {{hiright|tojson}};
-        var js_tags = {{tags|tojson}};
-    </script>
-    <script type="text/javascript" src="../static/js/result.js"></script>
     <link rel="stylesheet" href="../static/css/main.css">
-    <link id="stylesheet" rel="stylesheet" href="../static/css/result.css">
+    <link id="stylesheet" rel="stylesheet" href="../static/css/practice.css">
     <script src="https://kit.fontawesome.com/25e48f69d0.js" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Caveat" rel="stylesheet">
+    <script type="text/javascript" src="../static/js/practice.js"></script>
     <title>TKB Coder</title>
 </head>
 
 <body>
-    <!---chatbot -->
-    <!-- <input id="cy_button" type="button" onclick="show_cy()" value="グラフを確認する">
-    <div class="suggest" id="suggest">
-        {%for re in result %}
-            {%if re[0] == "system"%}
-                <div class="system_suggest">   
-                    <div class="system left">
-                        <img class="icon" src="static/img/system_icon.png" alt="">
-                        <div class="suggest_content">
-                            <p>{{re[1]}}</p>
-                        </div>
-                    </div>            
-                </div>
-            {%else%}
-                <div class="user_comment">
-                    <div class="user right">
-                        <div class="suggest_content" id="suggest_content">
-                            <p>{{re[1]}}</p>
-                        </div>
-                    </div> 
-                </div>
-            {%endif%}
-        {%endfor%}
-    </div> -->
-    <!-- <div id="attention_word" class="attention_word">
-        >>> 選択した文章が入ります
-    </div> -->
-    <!-- <div class="wrapper_user_textarea">
-        <textarea class="user_textarea" name="reason" cols="20" rows="5" placeholder="メッセージを入力してください" required></textarea>
-    </div> -->
-     <!---chatbot -->
-
-
-    <!----tagの推薦----->
-    
+       
     <div class="suggest" id="suggest">
         <div class="suggest_title"><p>こちらの文章はいかがですか？</p></div>
         {%for rec in recommends %}
@@ -76,6 +38,10 @@
         {%endfor%}
     </div>
     <!----tagの推薦----->
+    <div class="wrapper-menu">
+            <a href="/" class="btn btn-border" onclick="">TOPページへ</a>
+     </div>
+
     <div class="box">
         <button onclick="all_tag(this)"i class="fa-solid fa-tag"><span>タグ一覧</span></button>
         <div id="tag_modal" class="tag_modal">
@@ -95,8 +61,6 @@
               </div>
         </div>
         <button onclick="check_rec_level(this)" id="rec_level"class="rec_level"><span>推薦頻度：低</span></button>
-        <button onclick="page_top(this)" id="page_top" class="page_top"><span>TOP</span></button>
-        <button onclick="show_howtouse(this)" id="show_howtouse" class="show_howtouse"><span>使い方</span></button>
         <div id="howtouse_modal" class="howtouse_modal">
             <div class="howtouse_modal-content">
                 <div class="howtouse_modal-header">
@@ -136,21 +100,7 @@
     </div>
 
     <header>
-        <!---icon-->
-        <!-- <div class="wrapper-menu">
-            <form action="/" method="GET">
-                <button i class="fa-solid fa-house"><span>Home</span></button>
-            </form>
-            <form action="/history" method="GET">
-                <button i class="fas fa-history"><span>History</span></button>
-            </form>
-            <form action="/result" method="GET">
-                <button i class="fas fa-chart-line"><span>Analysis</span></button>
-            </form> 
-        </div> -->
-        <!---icon-->
-
-        <!---modalを仕込むためのもの-->
+      
         <div class="hidden_modal_icon">
             <div class="content">
                 <div class="js-modal-open kk" href="">{{t}}</div>
@@ -161,9 +111,7 @@
                         <p class="p1">タグを入力してください</p>
                         <p class="p2">＊ Shift+z で送信できます</p>
                     </div>
-                    <input type="text"  list="browsers" class="input_tag_text" id="input_tag_text"  />
-                    <datalist id="browsers">
-                    </datalist>
+                    <input type="text"  class="input_tag_text" id="input_tag_text"  />
                     <input type="button" class="input_tag_button" id="input_tag_button" onclick="input_tag()" value="送信">
                     </div>
                    
@@ -180,22 +128,59 @@
             <div class="wrapper-content">
                 <div class="sentences">
                     <div class="file_name"><p>ファイル名：{{file_name}}</p></div>
-                    {%for line in lines %}
+                    <!-- {%for line in lines %} -->
                     <div class="wrapper-sentence">
                         <div class="sentence">
                             <!-- <span>{{line.index}}</span> -->
-                            <div id="{{line.index|safe}}" class="part_sentence">{{line.sentence}}</div>
+                            <!-- <div id="{{line.index|safe}}" class="part_sentence">{{line.sentence}}</div> -->
                             <!-- <p class="sentence_content" id="{{line.index|safe}}">{{line.sentence}}</p> -->
+                            <h1 class="practice_title">1．タグ付けを行おう</h1>
+                            <ol type="1">
+                                <li>タグを付与したいテキストの範囲をドラッグしてください</li><br>
+                                <li>範囲が決定した後, <span class="shift_enter">Shift+Enterキー</span>を押してください．タグ入力画面が表示されます．</li><br>
+                                <li>検索ボックスにタグを入力し，<span class="shift_enter">送信ボタンをクリック</span> or <span class="shift_enter">Shift+z</span> を押してください．タグが送信されます．</li>
+                            </ol><br>
+                            <h2>練習１）下の文章のどこかに「テスト」というタグを付与してみよう</h2>
+                            <p>こちらはTKBcoderです．テキストタグ付けを支援するシステムとなっております．</p>
+                            <h1 class="practice_title">２．タグを削除しよう</h1>
+                            <ul>
+                                <li>間違えてタグ付けを行なってしまった場合には削除が行えます</li>
+                                <li>指定した範囲は緑色のボタンになっていますので，取り消したいタグのボタンをダブルクリックしてください．</li>
+                            </ul>           
+                            <h2>練習２）１でタグ付けを行なった部分を取り消してみよう</h2>
+                            <h1 class="practice_title">3．システムからの推薦を確認しよう</h1>
+                            <ul>
+                                <li>分析者が送信したタグと同じタグが付与される可能性のある文章が，画面右にシステムから推薦されます．</li>
+                                <li>その推薦された文章に同様のタグを付与して良ければ，<span class="shift_enter">適用する</span>ボタンをクリックしてください．</li>
+                                <li>その推薦を断る場合には<span class="shift_enter">適用しない</span>ボタンをクリックしてください．</li>
+                            </ul>
+                            <h2>練習３）推薦を利用して下の文章のタグ付けを行なってみよう</h2>
+                            <p >画面右の推薦を利用して，<span class="target">この文章にタグ付けをしよう</span></p>
+                            <h1 class="practice_title">４．その他の機能を触ってみよう</h1>
+                            <ol type="1">
+                                <li>　分析者は推薦頻度の変更を自分で行うことができます</li>
+                                <ul>
+                                    <li>分析対象テキストによっては，システムからの推薦頻度が極端に多いor少なくなってしまう場合があります．</li>
+                                    <li>そのため，画面上部の「推薦頻度：○」ボタンをクリックすることで推薦頻度が変更されます．</li>
+                                    <li>推薦頻度の変更を行なった場合，次回以降の推薦から反映されます．</li>
+                                </ul><br>
+                                <li>　分析者は自分が登録したタグ＆テキストを確認することができます．</li>
+                                <ul>
+                                   <li>画面上部の「タグ一覧」ボタンをクリックすることで，一覧画面が表示されます．</li>
+                                </ul>
+                            </ol>
+                            <h2>練習４）推薦頻度の変更とタグ一覧の確認をしてみよう</h2>
+                            <br><br>
+                            <h2>以上で練習は終了になります．TOPページへ戻り，<br>分析対象テキストをシステムに送信することで分析が開始されます．</h2><br>
+                            <h2>それではよろしくお願いいたします．</h2>
                         </div>
                         <!-- <br> -->
                     </div>             
-                    {%endfor%}
+                    <!-- {%endfor%} -->
                     <div class="content_end"></div>
                     <!-- </form> -->
                 </div> 
             </div>
-            <textarea id="reason" class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
-            <input type="button" id="submit" class="js-close button-close" onclick="get_message()" value="送信">
         </main>
     
 </body>

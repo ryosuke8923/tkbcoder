@@ -1,0 +1,613 @@
+
+  
+  body {
+    background-color:hsl(60, 10%, 10%); 
+    z-index: 10;
+  }
+  header h1{
+    top:0;
+    font-size: 5em;
+    text-align: center;
+    width: 80vw;
+    font-family: monospace, monospace;
+    font-weight: bolder;
+    color:white;
+  }
+
+  main {
+    height: 100%;
+  }
+  .sentences {
+      position: absolute;
+      left: 0;
+      width: 80vw;
+      display: inline-block;
+  }
+ 
+  .suggest {
+      position:fixed;
+      z-index: 100;
+      background-color:#769ece;
+      top: 0;
+      right: 0;
+      width: 19vw;
+      height: 100vh;
+      /* bottom: 0; */
+      overflow-y: auto;
+      font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","Helvetica Neue", "Lucida Sans Unicode", "Arial";
+  }
+  .system , .user{
+    position: relative;
+    display: inline-block;
+    max-width: 192px;
+    margin: 8px 0 0;
+    padding: 9px 14px;
+    border-radius: 19px;
+    clear: both;
+    box-sizing: content-box;/*はてな用*/
+}
+/*フキダシ左*/
+.system , .left {
+    float: left;
+    width: 100%;
+    margin-left: 62px;
+    background: #FFFFCC;
+    color: black;
+    font-size: 0.7rem;
+}
+/*フキダシ右*/
+.user ,.right {
+  float: right;
+  width: 100%;
+  margin-right: 12px;
+  font-size: 0.7rem;
+  background: #7adc40;
+}
+.icon {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  left: -54px;
+  top: -2px;
+  border-radius: 20px;
+  border: black;
+  background-color:aquamarine;
+  border-color: white;
+}
+
+.attention_word{
+  color: black;
+  position: fixed;
+  width: 19vw;
+  height: 12vh;
+  right: 0;
+  top: 80vh;
+  z-index: 3;
+  background-color:#769ece;
+}
+
+  .suggest h1{
+      color: black;
+      text-align: center;
+      font-size: 0.8vw;
+  }
+  .wrapper-content{
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+  }
+  .checkbutton{
+      vertical-align:center;
+      padding-top: 5vh;
+      text-align: center;
+      padding-right: 5vw;
+      padding-left: 5vw;
+  }
+
+  .sentence{
+      width: 100%;
+      vertical-align:top;
+      /* border-bottom: solid; */
+      font-size: 1vw;
+      
+  }
+  
+  .sentence > span {
+    display: inline-block;
+    margin-left: 2%;
+    font-size: 1.5rem;
+  }
+
+  .sentence p {
+      text-align: left;
+      font-size: 1.5em;
+      overflow-wrap: break-word;
+  }
+
+  .wrapper-sentence {
+    display: flex;
+    position: relative;
+    margin-left: 3%;
+    margin-right: 3%;
+  }
+
+.textarea{
+      position: fixed;
+      width: 18.75vw;
+      height: 100px;
+      z-index: 3;
+      right: 0;
+      bottom: 3vh;
+      border: black;
+}
+  /* 閉じるボタン */
+  .button-close {
+    position: fixed;
+    left:90.5%;
+    top:98%;
+    z-index: 20;
+    border: solid;
+    transform: translate(-50%, -50%);
+    width: 19vw;
+    padding: 1em;
+    background-color: #c96931;
+    color: #eaeaea;
+    /* border-radius: 20rem; */
+    cursor: pointer;
+  }
+
+  .suggest_content{
+    color: black;
+  }
+
+  .suggest_content > a,a:hover,a:visited{
+    color: inherit;
+}
+
+  .suggest_content > a>span{
+    display: inline-block; 
+    margin-left: 2%;
+    margin-top: 2%;
+  }
+
+  .suggest_content > p{
+    word-break:break-all;
+  }
+
+  /* ローディング画面 */
+#loading {
+  width: 100vw;
+  height: 100vh;
+  transition: all 1s;
+  background-color: #0bd;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+.spinner {
+  width: 100px;
+  height: 100px;
+  margin: 200px auto;
+  background-color: #fff;
+  border-radius: 100%;
+  animation: sk-scaleout 1.0s infinite ease-in-out;
+}
+/* ローディングアニメーション */
+@keyframes sk-scaleout {
+  0% {
+    transform: scale(0);
+  } 100% {
+    transform: scale(1.0);
+    opacity: 0;
+  }
+}
+.loaded {
+  opacity: 0;
+  visibility: hidden;
+}
+
+
+.tag {
+  position: relative;
+  display: inline-block;
+  height: 50px;
+  margin-left: 50px;
+  padding: 1rem 2rem 1rem 3rem;
+  color: #fff;
+  background: #fa4141;
+}
+
+.tag:before {
+  position: absolute;
+  top: 0;
+  left: -30px;
+  content: '';
+  border-width: 32px 30px 32px 0;
+  border-style: solid;
+  border-color: transparent #fa4141 transparent transparent;
+}
+
+.tag:after {
+  position: absolute;
+  top: calc(50% - 7px);
+  left: -10px;
+  width: 14px;
+  height: 14px;
+  content: '';
+  border-radius: 50%;
+  background: #fff;
+}
+
+#cy {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  left: 0;
+  width: 81vw;
+  height:100vh;
+  background-color:#B0C4DE;
+}
+
+#cy_button {
+  position: fixed;
+  z-index: 4;
+  top: 0;
+  right: 0;
+  width: 19vw;
+  height:10vh;
+  background-color:#B0C4DE;
+}
+
+.kk {
+  display       : inline-block;
+  border-radius : 5%;          /* 角丸       */
+  font-size     : 18pt;        /* 文字サイズ */
+  text-align    : center;      /* 文字位置   */
+  cursor        : pointer;     /* カーソル   */
+  padding       : 12px 12px;   /* 余白       */
+  background    : #000066;     /* 背景色     */
+  color         : #ffffff;     /* 文字色     */
+  line-height   : 1em;         /* 1行の高さ  */
+  transition    : .3s;         /* なめらか変化 */
+  box-shadow    : 6px 6px 3px #666666;  /* 影の設定 */
+  border        : 2px solid #000066;    /* 枠の指定 */
+  margin-left: 30px;
+  margin-top: 30px;
+}
+.kk:hover {
+  box-shadow    : none;        /* カーソル時の影消去 */
+  color         : #000066;     /* 背景色     */
+  background    : #ffffff;     /* 文字色     */
+}
+
+.hidden_modal_icon{
+  position: fixed;
+  z-index: 10;
+  top: 5;
+  width: 100vw;
+  height: 10vh;
+}
+.hidden_modal_icon > .content{
+  position: absolute;
+  right: 0;
+
+}
+.modal{
+  display: none;
+  height: 10vh;
+  position: absolute;
+  top:-30%;
+  left: 0;
+  width: 60vw;
+}
+
+.modal__content{
+  background: #B0C4DE;
+  color: black;
+  left: 38%;
+  padding: 40px;
+  position: absolute;
+  top: 10%;
+  transform: translate(-50%,-50%);
+  width: 70%;
+  height: 7vh;
+  text-align: center;
+  display: flex;
+}
+
+.modal_content_p > .p1 {
+  background-color: #B0C4DE;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  height: 5vh;
+  width: 18vw;
+  margin-top: -3vh;
+
+}
+
+.modal_content_p > .p2{
+  background-color: #B0C4DE;
+  text-align: center;
+  margin-top: -3vh;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.input_tag_text {
+  width: 40vw;
+  margin-left: 3vw;
+  text-align: left;
+}
+
+.suggest_title {
+  color: black;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  background: linear-gradient(transparent 50%, orange 50%);
+}
+
+.suggest_data {
+  position: relative;
+  color: #494949;/*文字色*/
+  margin: auto;
+  width: 80%;
+  margin-bottom: 5vh;
+  background: #fffaf4;/*背景色*/
+  
+  border-left :solid 10px orange;
+  border-bottom: solid 3px #d7d7d7;/*下線*/
+  /*余白をつけておきます*/
+  padding: 10px;  
+}
+.suggest_id {
+  position: absolute;
+  top: 3;
+  left: 3;
+  height: 3vh;
+  width: 10vw;
+  display: flex;
+}
+
+.suggest_main {
+  word-wrap: break-word;
+  height: auto;
+  margin-top: 5vh;
+}
+
+.apply {
+  margin-left: 1vw;
+}
+
+.part_sentence {
+  font-size: 20px;
+  text-indent: 1em;
+  max-width: 55em;
+  margin:auto;
+}
+
+.recommend_tag::before, .recommend_sentence::before {
+  font-family: "Font Awesome 5 Free";
+  content: "\f00c";/*アイコンのユニコード*/
+  font-weight: 900;
+  font-size: 1em;/*サイズ*/
+  color: #5ab9ff; /*アイコン色*/
+  font-weight: 900;
+}
+
+.content_end {
+  width: auto;
+  height: 10em;
+}
+
+.box{
+  position: fixed;
+  background-color:#8a8;
+  height: 15vh;
+  width: 82%;
+  z-index: inherit;
+}
+.fa-solid{
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  font-size: 1.2rem;
+}
+.rec_level{
+  position: absolute;
+  top: 40%;
+  right: 5%;
+  font-size: 1.2rem;
+}
+
+.page_top{
+  position: absolute;
+  top: 10%;
+  left:3%;
+  font-size: 1.2rem;
+}
+.show_howtouse{
+  position: absolute;
+  top: 10%;
+  left:10%;
+  font-size: 0.95rem;
+}
+
+.tag_modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.tag_modal-content {
+  background-color: #f4f4f4;
+  margin: 20% auto;
+  width: 50%;
+  box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2),0 7px 20px 0 rgba(0,0,0,0.17);
+  animation-name: modalopen;
+  animation-duration: 1s;
+}
+@keyframes modalopen {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+.tag_modal-header h1 {
+  margin: 1rem 0;
+  color: black;
+  font-family: monospace, monospace;
+}
+
+.tag_modal-header {
+  background: #8a8;
+  padding: 3px 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tag_modalClose {
+  font-size: 2rem;
+}
+
+.tag_modalClose:hover {
+  cursor: pointer;
+}
+
+.tag_modal-body {
+  padding: 10px 20px;
+  color: black;
+}
+
+.tag_modal-body p {
+  border-bottom: solid;
+}
+
+
+.howtouse_modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  /* right: 100;
+  top: 0; */
+  height: 50%;
+  width: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.howtouse_modal-content {
+  background-color: #f4f4f4;
+  /* margin: 20% auto; */
+  position: relative;
+  top: 0;
+  left: 0%;
+  width: 80%;
+  height: auto;
+  box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2),0 7px 20px 0 rgba(0,0,0,0.17);
+  animation-name: howtouse_modalopen;
+  animation-duration: 1s;
+}
+@keyframes howtouse_modalopen {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+.howtouse_modal-header h1 {
+  margin: 1rem 0;
+  color: black;
+  font-family: monospace, monospace;
+}
+
+.howtouse_modal-header {
+  background: #8a8;
+  padding: 3px 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.howtouse_modalClose {
+  font-size: 2rem;
+}
+
+.howtouse_modalClose:hover {
+  cursor: pointer;
+}
+
+.howtouse_modal-body {
+  padding: 10px 20px;
+  color: black;
+}
+
+
+.shift_enter{
+  color: red;
+  font-weight: bold;
+}
+
+.howtouse_h2{
+  width: fit-content;
+  border-bottom: solid red;
+}
+
+
+a.btn-border {
+    border: 2px solid #000;
+    border-radius: 0;
+    background: #fff;
+    -webkit-box-shadow: 4px 4px 0 #000;
+    box-shadow: 4px 4px 0 #000;
+  }
+  
+  a.btn-border:hover {
+    -webkit-box-shadow: -4px -4px 0 #000;
+    box-shadow: -4px -4px 0 #000;
+  }
+  
+  /* *,
+  *:before,
+  *:after {
+    -webkit-box-sizing: inherit;
+    box-sizing: inherit;
+  }
+   */
+  .btn,
+  a.btn,
+  button.btn {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.5;
+    position: absolute;
+    top:14%;
+    left: 1%;
+    display: inline-block;
+    padding: 1rem 4rem;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transition: all 0.3s;
+    transition: all 0.3s;
+    text-align: center;
+    vertical-align: middle;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    color: #212529;
+    border-radius: 0.5rem;
+  }
+
+.wrapper-menu {
+    z-index: 100;
+    width: 50%;
+    height: 100px;
+}

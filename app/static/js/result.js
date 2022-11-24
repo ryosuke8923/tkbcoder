@@ -227,6 +227,17 @@ let tmp_node = "";
 // Loading Action
 // ================タグ付与部分の再現====================
 window.onload = function() {
+	// let input_text = document.getElementById("input_tag_text");
+	// input_text.setSuggestions(["ありがとう"])
+	console.log(js_tags)
+	let keys = Object.keys(js_tags);
+	let browsers = document.getElementById("browsers");
+	for(let i=0;i<keys.length;i++){
+		var new_element = document.createElement('option');
+		new_element.value = keys[i];
+		browsers.appendChild(new_element);
+
+	}
 	let page_anchor = Number(window.localStorage.getItem("page_anchor"));
 	let rec_level = Number(window.localStorage.getItem("rec_level"));
 	window.location.hash = "";

@@ -154,7 +154,7 @@ remove_recommends = [
 
 @app.route("/",methods=["GET","POST"])
 def index():   
-    global questionnaire_data,analyst_data,user_hiright,rec_texts,rec_sent2index,recommend_system,recommends,log_file_path,remove_recommends
+    global questionnaire_data,analyst_data,user_hiright,rec_texts,rec_sent2index,recommend_system,recommends,log_file_path,remove_recommends,tags
 
     if request.method == "POST":
         #postされたファイルオブジェクト取得
@@ -247,6 +247,8 @@ def result():
         print("user_hiright")
         print(user_hiright)
         print(recommend_system.Xs_threshold)
+        print("tags")
+        print(tags)
         if user_hiright != [] and user_hiright[-1]["tag"] != "":
             make_tag2sent(tags,user_hiright)
         if questionnaire_data.html_data==None:
@@ -261,6 +263,15 @@ def result():
             hiright = user_hiright,
             recommends = recommends,
             tags = tags
+        )
+@app.route("/practice",methods=["GET"])
+def practice():
+    return render_template(
+        "practice.html",
+        file_name="test.doc",
+        lines=[{"index":1,"sentence":"a","tag":"a"}],
+        recommends = [["1","この文章にタグ付けをしよう","テスト2"]],
+        tags = {"a":"b"}
         )
 
 @app.route("/history",methods=["GET"])
