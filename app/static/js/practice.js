@@ -68,7 +68,7 @@ function apply_recommend(e){
 		span.setAttribute('ondblclick', 'remove_tag(this)');
 		span.style.color = "black";
 
-	    show_tag("target","テスト2");
+	    show_tag("target","テスト");
        
         document.getElementsByClassName("suggest_data")[0].remove();
 	}

@@ -270,8 +270,8 @@ def practice():
         "practice.html",
         file_name="test.doc",
         lines=[{"index":1,"sentence":"a","tag":"a"}],
-        recommends = [["1","この文章にタグ付けをしよう","テスト2"]],
-        tags = {"a":"b"}
+        recommends = [["1","この文章にタグ付けをしよう","テスト"]],
+        tags = {"テスト":"この文章にタグ付けをしよう．"}
         )
 
 @app.route("/history",methods=["GET"])

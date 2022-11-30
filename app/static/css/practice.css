@@ -14,6 +14,17 @@
     color:white;
   }
 
+  header h3{
+    top:0;
+    font-size: 2rem;
+    margin-top: -7rem;
+    text-align: center;
+    width: 80vw;
+    font-family: monospace, monospace;
+    font-weight: bolder;
+    color:white;
+  }
+
   main {
     height: 100%;
   }
@@ -609,5 +620,69 @@ a.btn-border {
 .wrapper-menu {
     z-index: 100;
     width: 50%;
-    height: 100px;
+    height: 30px;
+}
+
+.practice_title{
+  width:fit-content;
+  border-bottom: solid red;
+}
+
+.que {
+  color: black;
+  position: relative;
+  padding: 1.5rem;
+  text-align: center;
+  border: 2px solid #000;
+  background: #fff;
+}
+
+.que:before,
+.que:after {
+  position: absolute;
+  content: '';
+}
+
+.que:before {
+  top: -40px;
+  left: calc(50% - 40px);
+  width: 80px;
+  height: 80px;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.que:after {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+
+.que i {
+  font-size: 30px;
+  font-size: 3rem;
+  line-height: 60px;
+  position: absolute;
+  z-index: 1;
+  top: -40px;
+  left: calc(50% - 40px);
+  width: 80px;
+  height: 60px;
+  text-align: center;
+}
+
+.que span {
+  position: relative;
+  z-index: 1;
+}
+
+li {
+  font-size: 1.2rem;
+}
+
+.last{
+  text-align: center;
 }
