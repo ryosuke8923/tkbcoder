@@ -349,6 +349,7 @@ def hiright():
 def input_tag():
     global recommend_style,recommend_system,user_hiright,recommends,remove_recommends
     tmp_tag = request.form["input_tag"]
+    print(tmp_tag,user_hiright)
     # print("tmp_tag")
     # print(tmp_tag)
     # print("user_hiright")
@@ -359,6 +360,7 @@ def input_tag():
                 user_hiright.pop(i)
     else:
         if  len(user_hiright) != 0 and user_hiright[-1]["tag"] == "":
+            print(11)
             user_hiright[-1]["tag"] = tmp_tag
             output_log(eventtype="tag",text=user_hiright[-1]["text"],tag=tmp_tag,line=user_hiright[-1]["id"])
         # 推薦アルゴリズム~recommendへappendまで
@@ -371,8 +373,7 @@ def input_tag():
         if x:
             recommend_text = rec_texts[x]
             ids = rec_sent2index[recommend_text]-1
-            tag = tmp_tag
-            # user_hiright[-1]["tag"] if user_hiright[-1]["tag"] != "" else tmp_tag
+            tag = user_hiright[-1]["tag"] if user_hiright[-1]["tag"] != "" else tmp_tag
             # print([ids,recommend_text[:10],tag])
             # print(recommend_system.Xs_threshold)
             # length = len(recommend_text) if len(recommend_text) <=20 else 20
