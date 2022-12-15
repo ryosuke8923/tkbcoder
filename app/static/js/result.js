@@ -21,7 +21,10 @@
 
 //==================関数群==========================
 
-
+function end(){
+	console.log("hello");
+	localStorage.clear();
+}
 //=============フロントにタグを表示させる関数============
 function show_tag(hiright_id,content){
 
@@ -102,9 +105,9 @@ function apply_recommend(e){
 		const a= id;
 		const b = 0;
 		const c= 0;
-		const d = sentence1.trim();
-		const e = sentence2.trim();
-
+		let d = sentence1.trim();
+		let e = sentence2.trim();
+		d = "apply_" + d;
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", '/hiright', true);
 		xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

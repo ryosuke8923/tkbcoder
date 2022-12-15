@@ -190,12 +190,20 @@
                         <!-- <br> -->
                     </div>             
                     {%endfor%}
-                    <div class="content_end"></div>
                     <!-- </form> -->
+                    <div class="end">
+                        <form action="/download" metho="GET">
+                            <button class="btn btn-border" >ログファイルのダウンロード</button>
+                        </form>
+                        <form action="/" metho="GET">
+                            <button class="btn2 btn-border" onclick="end()">データを消して戻る</button>
+                        </form>
+                    </div>
                 </div> 
+                
             </div>
-            <textarea id="reason" class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
-            <input type="button" id="submit" class="js-close button-close" onclick="get_message()" value="送信">
+            <!-- <textarea id="reason" class="textarea" name="reason" cols="50" rows="10" placeholder="メッセージを入力してください" required></textarea>
+            <input type="button" id="submit" class="js-close button-close" onclick="get_message()" value="送信"> -->
         </main>
     
 </body>

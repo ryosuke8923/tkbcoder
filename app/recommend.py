@@ -83,8 +83,8 @@ class Recommend:
         candidate_lst = []
         index_lst = []
         l = np.zeros(len(self.Xs_sent))
-        print(self.Xs_sent_emb.shape)
-        print(target_sent)
+        # print(self.Xs_sent_emb.shape)
+        # print(target_sent)
         for i in range(len(target_sent)):
             embedding = self.model.encode(target_sent[i],convert_to_tensor=True)
             # print("target_emb:{}".format(embedding))
@@ -94,13 +94,13 @@ class Recommend:
 #             candidate_lst += [ (t,scores.index(t)) for t in heapq.nlargest(topn, scores) if scores.index(t) not in target_index]
         l = l / len(target_sent)
         l = l.tolist()
-        print(l)
+        # print(l)
         candidate_lst += [ (t,l.index(t)) for t in heapq.nlargest(topn, l)]
         candidate_lst = sorted(candidate_lst,reverse=True)
         candidate_lst.pop(0)
         while candidate_lst[0][1] in self.exception_sent_index:
             candidate_lst.pop(0)
-        print(candidate_lst)
+        # print(candidate_lst)
 #         print(candidate_lst)
         # if use_model:
         #     suggest_sentence = self.Xs[self.sent2index[index[0]]]["sentence"]

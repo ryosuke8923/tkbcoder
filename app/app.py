@@ -1,5 +1,5 @@
 #Flaskとrender_template（HTMLを表示させるための関数）をインポート
-from flask import Flask,render_template,redirect,url_for,Markup
+from flask import Flask,render_template,redirect,url_for,Markup,send_file
 from flask import request
 from werkzeug.utils import secure_filename
 import os 
@@ -17,6 +17,9 @@ from docx import Document
 
 my_path = os.path.expanduser('~') + "/tkbcoder/app/" if os.path.expanduser('~') != "/Users/saitouryousuke" else os.path.expanduser('~') + "/prog/python/tkbcoder/app/"
 print(my_path)
+
+#メモ
+#・全く同じ文章が含まれているときにバグをはく可能性あり．ただ，どこのそれを見ているかは判別不可 (rec_sent2index)
 
 
 my_files_path = my_path + "files/"
@@ -79,6 +82,7 @@ class QuestionnaireData:
     def make_html_data(self):
         html_data = []
         for i,k in enumerate(self.texts):
+            k = re.sub("\n","",k)
             html_data.append({"index":i,"sentence":k,"tag":[]})
         self.html_data = html_data
 
@@ -100,7 +104,7 @@ def make_sent(texts):
     sent2index = defaultdict(list)
     exception_sent_index = []
     for i in range(len(texts)):
-        sentence = [ x for x in re.split("[。．:;)]",texts[i]) if x != ""]
+        sentence = [ re.sub("\n","",x) for x in re.split("[。．:;)]",texts[i]) if x != ""]
         sent_texts += sentence
         for j in sentence:
             sent2index[j] = i
@@ -146,15 +150,14 @@ log_file_path = ""
 recommends = [
 ]
 remove_recommends = [
-
 ]
-
+recommend_style = True
 
 
 
 @app.route("/",methods=["GET","POST"])
 def index():   
-    global questionnaire_data,analyst_data,user_hiright,rec_texts,rec_sent2index,recommend_system,recommends,log_file_path,remove_recommends,tags
+    global recommend_style,questionnaire_data,analyst_data,user_hiright,rec_texts,rec_sent2index,recommend_system,recommends,log_file_path,remove_recommends,tags
 
     if request.method == "POST":
         #postされたファイルオブジェクト取得
@@ -174,9 +177,10 @@ def index():
                 all_text.append("==================================================")
         #ログファイルの設定
         log_file_path = my_path + "log/log.txt"
+        print(log_file_path)
         # 時刻，eventtype(自分，タグ削除，推薦○,推薦×，ジャンプ) 何行目の何文字目,テキスト 
         with open(log_file_path,"w") as f:
-            f.write("time,eventtype,text,tag,start_index,end_index\n")
+            f.write("time,eventtype,line,text,tag,level,\n")
         #ファイル情報の処理
         questionnaire_data.file_name = file_name
         if questionnaire_data.file_name != "":
@@ -203,22 +207,11 @@ def index():
             return render_template('index.html')
     else:
         #（仮）/ページがGETされた時，すなわちトップページに戻ってきたらデータ初期化するように設定しておく
-        questionnaire_data = QuestionnaireData()
-        analyst_data = AnalystData()
-        user_hiright = []
-        tags = {}
-        rec_texts = []
-        rec_sent2index = {}
-        #フォルダの初期化
-        make_dir(my_path,"files") 
-        make_dir(my_path,"log") 
-        recommends = []
-        remove_recommends=[]
         return render_template("index.html")
 
 @app.route("/result",methods=["GET","POST"])
 def result():
-    global user_hiright,recommend_system
+    global recommend_style,user_hiright,recommend_system,recommends
     if request.method == "POST":
         tmp_reason = request.form.get("reason")
         #分析者が選択した文章と理由の取得＆処理
@@ -243,12 +236,19 @@ def result():
             recommends = recommends,
             tags = tags
         )
+        # download_file_path = "log/log.txt"
+        # download_file_name = os.path.basename(download_file_path)
+        # return send_file(download_file_path, as_attachment=True,
+        #              attachment_filename=download_file_name,
+        #              mimetype='text/plain')
     else:
-        print("user_hiright")
-        print(user_hiright)
-        print(recommend_system.Xs_threshold)
-        print("tags")
-        print(tags)
+        # print("user_hiright")
+        # print(user_hiright)
+        # print(recommend_system.Xs_threshold)
+        # print("tags")
+        # print(tags)
+        # print(rec_sent2index)
+        # print(questionnaire_data.html_data)
         if user_hiright != [] and user_hiright[-1]["tag"] != "":
             make_tag2sent(tags,user_hiright)
         if questionnaire_data.html_data==None:
@@ -264,6 +264,15 @@ def result():
             recommends = recommends,
             tags = tags
         )
+
+@app.route("/download",methods=["GET"])
+def download():
+    filepath = "log/log.txt"
+    filename = os.path.basename(filepath)
+    return send_file(filepath, as_attachment=True,
+                     attachment_filename=filename,
+                     mimetype='text/plain')
+                     
 @app.route("/practice",methods=["GET"])
 def practice():
     return render_template(
@@ -274,6 +283,35 @@ def practice():
         tags = {"テスト":"この文章にタグ付けをしよう．"}
         )
 
+@app.route("/style",methods=["POST"])
+def style():
+    global recommend_style
+    x = int(request.form["style"])
+    if x == 0:
+        recommend_style = False
+    else:
+        recommend_style = True
+    print(recommend_style)
+    return render_template("index.html")
+
+@app.route("/reset",methods=["POST"])
+def reset():
+    global recommend_style,questionnaire_data,analyst_data,user_hiright,rec_texts,rec_sent2index,recommend_system,recommends,log_file_path,remove_recommends,tags
+    questionnaire_data = QuestionnaireData()
+    analyst_data = AnalystData()
+    user_hiright = []
+    tags = {}
+    rec_texts = []
+    rec_sent2index = {}
+    recommend_style = True
+    #フォルダの初期化
+    make_dir(my_path,"files") 
+    make_dir(my_path,"log") 
+    recommends = []
+    remove_recommends=[]
+    print(user_hiright)
+    return render_template("index.html")
+
 @app.route("/history",methods=["GET"])
 def history():
     analyst_data.save()
@@ -282,16 +320,16 @@ def history():
 
 @app.route("/hiright",methods=["POST"])
 def hiright():
-    global user_hiright
-    if request.form["d"] == "recommend_apply":
+    global recommend_style,user_hiright,recommends,remove_recommends
+    if re.match("^apply_",request.form["d"]):
         tmp_dic = {
             "id":request.form["a"],
             "startOffset":request.form["b"],
             "endOffset":request.form["c"],
-            "text":request.form["d"],
+            "text":re.sub("apply_","",request.form["d"]),
             "tag":"",
         }
-        output_log(eventtype="hiright_by_system",text=tmp_dic["text"])
+        output_log(eventtype="hiright_by_system",text=tmp_dic["text"],line=tmp_dic["id"])
     else:
         tmp_dic = {
             "id":request.form["a"],
@@ -300,15 +338,21 @@ def hiright():
             "text":request.form["d"],
             "tag":"",
         }
-        output_log(eventtype="hiright_by_analyst",text=tmp_dic["text"])
+        output_log(eventtype="hiright_by_analyst",text=tmp_dic["text"],line=tmp_dic["id"])
     if tmp_dic not in user_hiright:
         user_hiright.append(tmp_dic)
+        if tmp_dic["text"] not in remove_recommends:
+            remove_recommends.append(tmp_dic["text"])
     return redirect(url_for("result"))
 
 @app.route("/input_tag",methods=["POST"])
 def input_tag():
-    global recommend_system
+    global recommend_style,recommend_system,user_hiright,recommends,remove_recommends
     tmp_tag = request.form["input_tag"]
+    # print("tmp_tag")
+    # print(tmp_tag)
+    # print("user_hiright")
+    # print(user_hiright[-1])
     if tmp_tag == "":
         for i in range(len(user_hiright)):
             if user_hiright[i]["tag"] == "":
@@ -316,26 +360,35 @@ def input_tag():
     else:
         if  len(user_hiright) != 0 and user_hiright[-1]["tag"] == "":
             user_hiright[-1]["tag"] = tmp_tag
-            output_log(eventtype="tag",text=user_hiright[-1]["text"],tag=tmp_tag)
+            output_log(eventtype="tag",text=user_hiright[-1]["text"],tag=tmp_tag,line=user_hiright[-1]["id"])
         # 推薦アルゴリズム~recommendへappendまで
-        x = recommend_system.predict([user_hiright[-1]["text"]],user_hiright[-1]["tag"])
+        # print(user_hiright[-1])
+        if recommend_style:
+            x = recommend_system.predict([user_hiright[-1]["text"]],user_hiright[-1]["tag"])
+            x = 100
+        else:
+            x = False
         print(x)
+        # print(x)
         if x:
             recommend_text = rec_texts[x]
             ids = rec_sent2index[recommend_text]-1
             tag = user_hiright[-1]["tag"] if user_hiright[-1]["tag"] != "" else "-"
-            print([ids,recommend_text[:10],tag])
-            print(recommend_system.Xs_threshold)
+            # print([ids,recommend_text[:10],tag])
+            # print(recommend_system.Xs_threshold)
             # length = len(recommend_text) if len(recommend_text) <=20 else 20
             # if recommend_text[:length] not in remove_recommends:
             #     recommends.append([ids,recommend_text[:length],tag])
             if recommend_text not in remove_recommends:
                 recommends.append([ids,recommend_text,tag])
+                if recommend_text not in remove_recommends:
+                    remove_recommends.append(recommend_text)
+    print(user_hiright)
     return redirect(url_for("result"))
 
 @app.route("/remove_tag",methods=["POST"])
 def remove_tag():
-    global tags
+    global recommend_style,tags,user_hiright
     tmp_text = request.form["remove_tag"]
     remove_tag = ""
     remove_text = ""
@@ -343,7 +396,7 @@ def remove_tag():
         if user_hiright[i]["text"] == tmp_text:
             remove_tag = user_hiright[i]["tag"]
             remove_text = user_hiright[i]["text"]
-            output_log(eventtype="remove_tag",text=user_hiright[i]["text"],tag=user_hiright[i]["tag"])
+            output_log(eventtype="remove_tag",text=user_hiright[i]["text"],tag=user_hiright[i]["tag"],line=user_hiright[i]["id"])
             user_hiright.pop(i)
             break
     if remove_tag in tags:
@@ -352,18 +405,20 @@ def remove_tag():
                 tags.pop(remove_tag)
             else:
                 tags[remove_tag].remove(remove_text)
-    print(user_hiright)
     return redirect(url_for("result"))
 
 @app.route("/remove_recommend",methods=["POST"])
 def remove_recommend():
-    global recommend_system,remove_recommends
+    global recommend_style,recommend_system,remove_recommends
     tmp_text = request.form["remove_recommend"]
     for i in range(len(recommends)):
-        if recommends[i][1] == tmp_text:
+        if recommends[i][1]== tmp_text:
+            output_log(eventtype="remove_recommend",text=recommends[i][1],tag=recommends[i][2],line=recommends[i][0])
             recommends.pop(i)
             break
-    remove_recommends.append(tmp_text)
+    # remove_recommends.append(tmp_text)
+    # print(recommends)
+    # print(remove_recommends)
     return redirect(url_for("result"))
 
 
@@ -375,7 +430,9 @@ def remove_recommend():
 
 @app.route("/rec_level",methods=["POST"])
 def rec_level():
+    global recommend_style,recommend_system,remove_recommends
     tmp_rec_level = request.form["rec_level"]
+    output_log(eventtype="change_rec_level",level=tmp_rec_level)
     if tmp_rec_level == "0":
         recommend_system.Xs_threshold = recommend_system.threshold_high
     elif tmp_rec_level == "1":
@@ -384,13 +441,9 @@ def rec_level():
         recommend_system.Xs_threshold = recommend_system.threshold_low
     return redirect(url_for("result"))
 
-def make_log():
-    pass
-
-
-def output_log(eventtype="-",text="-",tag="-",start_index="-",end_index="-"):
+def output_log(eventtype="-",text="-",tag="-",line="-",level="-"):
     time = datetime.datetime.now()
     time = time.strftime('%Y-%m-%d %H:%M:%S')
-    string = "{},{},{},{},{},{}\n".format(time,eventtype,text,tag,start_index,end_index)
+    string = "{},{},{},{},{},{}\n".format(time,eventtype,line,text,tag,level)
     with open(log_file_path,"a") as f:
         f.write(string)
