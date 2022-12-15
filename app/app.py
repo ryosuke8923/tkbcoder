@@ -371,7 +371,8 @@ def input_tag():
         if x:
             recommend_text = rec_texts[x]
             ids = rec_sent2index[recommend_text]-1
-            tag = user_hiright[-1]["tag"] if user_hiright[-1]["tag"] != "" else "-"
+            tag = tmp_tag
+            # user_hiright[-1]["tag"] if user_hiright[-1]["tag"] != "" else tmp_tag
             # print([ids,recommend_text[:10],tag])
             # print(recommend_system.Xs_threshold)
             # length = len(recommend_text) if len(recommend_text) <=20 else 20
