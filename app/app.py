@@ -365,10 +365,8 @@ def input_tag():
         # print(user_hiright[-1])
         if recommend_style:
             x = recommend_system.predict([user_hiright[-1]["text"]],user_hiright[-1]["tag"])
-            x = 100
         else:
             x = False
-        print(x)
         # print(x)
         if x:
             recommend_text = rec_texts[x]
